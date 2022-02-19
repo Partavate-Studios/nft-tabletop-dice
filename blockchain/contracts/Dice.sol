@@ -17,7 +17,7 @@ contract TabletopDiceNFT is ERC721URIStorage, Ownable {
 
     Counters.Counter private _tokenIds;
     
-    constructor() ERC721 ("TabletopDiceNFT", "TabletopDice") {
+    constructor() ERC721 ("Tabletop Dice NFT", "P8DiceNFT") {
         // TODO: Create a bunch on genesis...
     }
 
