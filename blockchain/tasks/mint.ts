@@ -34,24 +34,32 @@ task("mint-nft", "Mint Dice NFTs")
       .then(async (contract: Contract) => {
 
         let rand = function (min: number, max: number) { // min and max included 
-          return Math.floor(Math.random() * (max - min + 1) + min)
+          return Math.floor(Math.random() * (max - min + 1) + min);
         }
 
-        let sides = 10;
-        let nameWords = ["🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹", 
+        let sides = 20;
+        let nameEmoji = ["🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹"];
+        let nameWords = [
           "Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster", 
           "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square", 
           "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace", 
-          "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight"]
+          "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight"];
 
-        let randomName = function () { return nameWords[rand(0, nameWords.length-1)] + ' ' +  nameWords[rand(0, nameWords.length-1)]; };
+        let randomName = function () {
+            return (
+              nameWords[rand(0, nameWords.length-1)] + ' ' +  
+              nameWords[rand(0, nameWords.length-1)] + ' ' + 
+              nameEmoji[rand(0, nameEmoji.length-1)]);
+        };
+        
         let randomStyleId = function () { return rand(0, 30); };
         let randomFontId = function () { return rand(0, 1); };
 
-        let accounts = 5; // In .env
-        let mintPerAccount = 20;
+        let accounts = 1; // In .env
+        let mintPerAccount = 100;
         let exactCopies = 1;
         for (let i = 0; i < accounts; i++) {
+          console.log("RUNNING ..." + i);
           for (let j = 0; j < mintPerAccount; j++) {
             let mint = {
               owner: env(`ACCOUNT_${i}`),
