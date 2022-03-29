@@ -8,6 +8,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+import("./tasks/accounts");
 import("./tasks/deploy");
 import("./tasks/mint");
 import("./tasks/roll");
@@ -36,8 +37,12 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    enabled: process.env.REPORT_GAS !== undefined,
+    enabled: (process.env.REPORT_GAS) ? true : false,
     currency: "USD",
+    //gasPrice: 44, // 2022.02.24 - Ethereum mainnet
+    gasPriceApi: 'Binance',
+    token: 'BNB',
+    coinmarketcap: process.env.COINMARKETCAP_API_KEY, // API Key 
   },
   etherscan: {
     apiKey: {
