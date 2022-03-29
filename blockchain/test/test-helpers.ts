@@ -4,6 +4,7 @@ import sinonChai from "sinon-chai";
 import { ethers as hardhatEthers, waffle } from "hardhat";
 import { Contract, Wallet } from "ethers";
 import type { FactoryOptions } from "@nomiclabs/hardhat-ethers/types";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 chai.use(sinonChai);
 
@@ -17,7 +18,7 @@ export async function deployContractWithLibrary(name: string, library: string): 
     const libraryDeployed = await LibraryPromise.then((contractFactory) => contractFactory.deploy());
 
     const factoryOptions:FactoryOptions = {
-      signer: getTestWallet(),
+      signer: await getTestWallet(),
       libraries: {
           [library]: libraryDeployed.address,
       }
@@ -29,12 +30,13 @@ export async function deployContractWithLibrary(name: string, library: string): 
 }
 
 
-export function deployTestContract(name: string): Promise<Contract> {
+export async function deployTestContract(name: string): Promise<Contract> {
   return hardhatEthers
-    .getContractFactory(name, getTestWallet())
+    .getContractFactory(name, await getTestWallet())
     .then((contractFactory) => contractFactory.deploy());
 }
 
-export function getTestWallet(): Wallet {
-  return waffle.provider.getWallets()[0];
+export async function getTestWallet(): Promise<SignerWithAddress> {
+  return (await hardhatEthers.getSigners())[0];
+  //return waffle.provider.getWallets()[0];
 }

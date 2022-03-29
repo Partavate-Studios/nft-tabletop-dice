@@ -5,11 +5,7 @@ import sinon from "sinon";
 
 describe("tasks", () => {
   beforeEach(async () => {
-    const wallet = getTestWallet();
-    sinon.stub(process, "env").value({
-      ETH_PUBLIC_KEY: wallet.address,
-      ETH_PRIVATE_KEY: wallet.privateKey,
-    });
+    // await hre.ethers.getSigners()
   });
 
   describe("deploy-all-contracts", () => {
@@ -31,7 +27,7 @@ describe("tasks", () => {
     });
 
     it("calls through and returns the transaction object", async () => {
-      const wallet = getTestWallet();
+      const wallet = await getTestWallet();
       sinon.stub(process.stdout, "write");
 
       await run("mint-nft", { 
