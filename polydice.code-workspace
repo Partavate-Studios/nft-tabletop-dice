@@ -5,6 +5,6 @@
 		},
 	],
 	"settings": {
-		"solidity.packageDefaultDependenciesDirectory": "blockchain/node_modules"
+		"solidity.packageDefaultDependenciesDirectory": "evm/node_modules"
 	}
 }
