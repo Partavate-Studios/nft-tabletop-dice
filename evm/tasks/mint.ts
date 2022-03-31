@@ -17,7 +17,7 @@ task("mint-nft", "Mint Dice NFTs")
         return contract.mintNFT(
           taskArgs.owner,
           taskArgs.name,
-          taskArgs.sides, 
+          taskArgs.sides,
           taskArgs.styleId,
           taskArgs.font,
           { gasLimit: 500_000 }
@@ -33,29 +33,29 @@ task("mint-nft", "Mint Dice NFTs")
     return getContract("TabletopDiceNFT", hre)
       .then(async (contract: Contract) => {
 
-        let rand = function (min: number, max: number) { // min and max included 
+        let rand = function (min: number, max: number) { // min and max included
           return Math.floor(Math.random() * (max - min + 1) + min);
         }
 
         let sides = 20;
         let nameEmoji = ["🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹"];
         let nameWords = [
-          "Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster", 
-          "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square", 
-          "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace", 
+          "Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster",
+          "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square",
+          "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
           "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight"];
 
         let randomName = function () {
             return (
-              nameWords[rand(0, nameWords.length-1)] + ' ' +  
-              nameWords[rand(0, nameWords.length-1)] + ' ' + 
+              nameWords[rand(0, nameWords.length-1)] + ' ' +
+              nameWords[rand(0, nameWords.length-1)] + ' ' +
               nameEmoji[rand(0, nameEmoji.length-1)]);
         };
-        
+
         let randomStyleId = function () { return rand(0, 30); };
         let randomFontId = function () { return rand(0, 1); };
 
-        let accounts = 1; // In .env
+        let accounts = 3; // In .env
         let mintPerAccount = 100;
         let exactCopies = 1;
         for (let i = 0; i < accounts; i++) {
@@ -69,11 +69,11 @@ task("mint-nft", "Mint Dice NFTs")
             };
 
             console.log("Minting:", mint);
-            
+
             await contract.mintNFTBatch(
               mint.owner,
               mint.name,
-              sides, 
+              sides,
               mint.styleId,
               mint.font,
               exactCopies,

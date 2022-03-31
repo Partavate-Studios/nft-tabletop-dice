@@ -23,7 +23,7 @@ describe("TabletopDiceNFT", () => {
 
   async function mintNftDefault(): Promise<TransactionResponse> {
     return deployedContract.mintNFT(
-      wallet.address, 
+      wallet.address,
       name,
       sides,
       styleId,
@@ -33,7 +33,7 @@ describe("TabletopDiceNFT", () => {
 
   async function mintNftBatch(count: number, owner=wallet.address): Promise<TransactionResponse> {
     return deployedContract.mintNFTBatch(
-      owner, 
+      owner,
       name,
       sides,
       styleId,
@@ -107,10 +107,10 @@ describe("TabletopDiceNFT", () => {
       let name = "der Würfel!";
       let sides = 10;
       let font = 14;
-      let tokenURIexpected = 
+      let tokenURIexpected =
         `https://dice.partavate.com/metadata/${name}/${sides}/${fgColor}/${bgColor}/${font}`;
 
-      await deployedContract.mintNFT(wallet.address, 
+      await deployedContract.mintNFT(wallet.address,
         name,
         sides,
         styleId,
@@ -125,8 +125,24 @@ describe("TabletopDiceNFT", () => {
       expect(die.bgColor).to.equal("555753");
       expect(die.font).to.equal(font);
 
-      console.log(await deployedContract.tokenURI(tokenId));
+      //console.log(await deployedContract.tokenURI(tokenId));
       expect(await deployedContract.tokenURI(tokenId)).to.equal(tokenURIexpected);
+    });
+  });
+
+  describe("Minting a random die", async () => {
+    it("creates a random die", async () => {
+      let tokenId = await deployedContract.mintRandomDie();
+      console.log('address', wallet.address);
+      //expect(tokenId).to.eq("0");
+
+      let nftBalance = await deployedContract.balanceOf(wallet.address);
+      expect(nftBalance).to.eq("1");
+
+      let die = await deployedContract.getTraits(0);
+      //expect(die.name).to.equal("test");
+      expect(die.sides).to.equal(20);
+
     });
   });
 
@@ -155,7 +171,7 @@ describe("TabletopDiceNFT", () => {
 
       it("10-side dice NFTs must roll with a result from 0-9", async () => {1
         await deployedContract.mintNFT(wallet.address, "D10", 10, styleId, font);
-  
+
         let tokenId = 0;
         let numRolls = 10;
         for (let index = 0; index < numRolls; ++index) {
@@ -172,7 +188,7 @@ describe("TabletopDiceNFT", () => {
       const otherAccount = (await ethers.getSigners())[1];
 
       let numMinted = 11;
-      
+
       // The first 5 NFTs will belong to someone else
       await mintNftBatch(5, otherAccount.address);
       // Now generate NFTs for our wallet address

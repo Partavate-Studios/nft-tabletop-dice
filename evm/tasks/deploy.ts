@@ -5,28 +5,46 @@ import { env } from "../lib/env";
 import { getContract } from "../lib/contract";
 
 task("deploy-all-contracts", "Deploy NFT contract").setAction(async (_, hre) => {
-  // First deploy the Library, since an address is required
-  const LibraryPromise = hre.ethers.getContractFactory("DiceLibrary");
-  const libraryDeployed = await LibraryPromise.then((contractFactory) => contractFactory.deploy());
+  /*
+  const DiceLibraryFactory = await hre.ethers.getContractFactory("DiceLibrary");
+  const diceLibrary = await DiceLibraryFactory.deploy();
+  await diceLibrary.deployed();
+  console.log("DiceLibrary deployed to:", diceLibrary.address);
 
-  const factoryOptions = {
-    // TODO: read --networks parameter, also make lib/wallet.ts work
-    // signer: getWallet("rinkeby"),
+  const RandomNameFactory = await hre.ethers.getContractFactory("RandomNameLibrary");
+  const randomNameLibrary = await RandomNameFactory.deploy();
+  await randomNameLibrary.deployed();
+  console.log("RandomNameLibrary deployed to:", randomNameLibrary.address);
+
+  const diceOptions = {
     libraries: {
-        "DiceLibrary": libraryDeployed.address,
+      "DiceLibrary": diceLibrary.address,
+      "RandomNameLibrary": randomNameLibrary.address
     }
   };
 
-  console.log("DiceLibrary.sol redeployed. NFT ownership is reset. New address is: ", libraryDeployed.address);
-  console.log("Update the library address in \"deploy\" task!!");
+  console.log("Reminder: Update the library address in \"deploy\" task!!");
+  */
+  const DiceFactory = await hre.ethers.getContractFactory(
+    "TabletopDiceNFT"
+  );
+  const dice = await DiceFactory.deploy(
+    ["Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster",
+    "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square",
+    "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
+    "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight"],
+    ["Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster",
+    "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square",
+    "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
+    "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight",
+    "🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹" ]);
+  await dice.deployed();
+  const name = await dice.name();
+  console.log('name: ', name);
+  process.stdout.write(`Contract address: ${dice.address}\n`);
 
-  return hre.ethers
-    .getContractFactory("TabletopDiceNFT", factoryOptions)
-    .then((contractFactory) => contractFactory.deploy())
-    .then((result) => {
-      process.stdout.write(`Contract address: ${result.address}\n`);
-      // TODO: Update contract address in .env
-    });
+
+  return dice.address;
 });
 
 // Deploys only the outer Dice.sol. // TODO: Actually persist owner storage
