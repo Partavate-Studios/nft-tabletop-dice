@@ -96,8 +96,10 @@ library DiceLibrary {
         uint8 randomStyleId = (uint8(random(nonce)) % (maxStyle + 1));
         return randomStyleId;
     }
-    function randomSides() internal pure returns (uint8) {
-        return uint8(20);
+    function randomSides(uint16 nonce) internal view returns (uint8) {
+        uint8[2] memory sides = [6, 20];
+        uint8 randomStyleId = (uint8(random(nonce)) % 2);
+        return sides[randomStyleId];
     }
     function randomFont(uint16 nonce) internal view returns (uint8) {
         uint8 maxFonts = 1;
