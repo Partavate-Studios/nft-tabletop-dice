@@ -1,7 +1,8 @@
 <script setup>
-import DtenGenericBackground from './_dice-parts/background/dten-generic-background.svg.vue'
-import DtenGenericNumbers from './_dice-parts/dten-generic-numbers.svg.vue'
-import DtenPixelNumbers from './_dice-parts/dten-pixel-numbers.svg.vue'
+import D20GenericBackground from './_dice-parts/d20/background/generic-background.svg.vue'
+import D20GenericNumbers from './_dice-parts/d20/generic-numbers.svg.vue'
+import D20PixelNumbers from './_dice-parts/d20/pixel-numbers.svg.vue'
+import D6GenericBackground from './_dice-parts/d6/background/generic-background.svg.vue'
 </script>
 
 <script>
@@ -43,7 +44,7 @@ export default {
   },
   computed: {
     rolling () {
-      return store.isRolling[this.diceid]      
+      return store.isRolling[this.diceid]
     },
     value () {
       if (store.lastRoll[this.diceid]) {
@@ -81,7 +82,7 @@ export default {
 </script>
 
 <template>
-  <g  v-if="store.ownedDice[diceid] != null">
+  <g  v-if="store.ownedDice[diceid] != null && store.diceTraits[diceid] != null">
     <ellipse cx="0" cy="60" rx="60" ry="10" fill="#000000" opacity="0.25" stroke-width="0" />
     <g class="dice" :class="{rolling: rolling}">
       <g fill="#ffffff" stroke="#ffffff">
@@ -93,12 +94,15 @@ export default {
                         dur="0.75s"
                         animate="freeze"
                         repeatCount="indefinite"/>
-        <dten-generic-background :backgroundColor="backgroundColor" />
-        <g v-if="fontType == 0">
-          <dten-generic-numbers :fontColor="fontColor" :value="displayValue()" />
-        </g>
-        <g v-if="fontType == 1">
-          <dten-pixel-numbers :fontColor="fontColor" :value="displayValue()" />
+        <d20-generic-background :backgroundColor="backgroundColor" v-if="sides == 20" />
+        <d6-generic-background :backgroundColor="backgroundColor" v-if="sides == 6" />
+        <g v-if="sides == 20" >
+          <g v-if="fontType == 0">
+            <d20-generic-numbers :fontColor="fontColor" :value="displayValue()" />
+          </g>
+          <g v-if="fontType == 1">
+            <d20-pixel-numbers :fontColor="fontColor" :value="displayValue()" />
+          </g>
         </g>
       </g>
     </g>
@@ -107,7 +111,7 @@ export default {
 
 <style>
 .dice {
-  transition: 0.5s ease-out; 
+  transition: 0.5s ease-out;
 }
 .rolling {
   transition: 2s linear;
