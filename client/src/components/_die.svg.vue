@@ -1,8 +1,10 @@
 <script setup>
 import D20GenericBackground from './_dice-parts/d20/background/generic-background.svg.vue'
 import D20GenericNumbers from './_dice-parts/d20/generic-numbers.svg.vue'
-import D20PixelNumbers from './_dice-parts/d20/pixel-numbers.svg.vue'
+import D20RareNumbers from './_dice-parts/d20/rare-numbers.svg.vue'
 import D6GenericBackground from './_dice-parts/d6/background/generic-background.svg.vue'
+import D6GenericNumbers from './_dice-parts/d6/generic-numbers.svg.vue'
+import D6RareNumbers from './_dice-parts/d6/rare-numbers.svg.vue'
 </script>
 
 <script>
@@ -76,14 +78,24 @@ export default {
       }
       return 20
     },
-
   }
 }
 </script>
 
 <template>
   <g  v-if="store.ownedDice[diceid] != null && store.diceTraits[diceid] != null">
-    <ellipse cx="0" cy="60" rx="60" ry="10" fill="#000000" opacity="0.25" stroke-width="0" />
+    <defs>
+      <radialGradient id="dieshadow">
+        <stop offset="0" stop-color="#000000" stop-opacity="1" />
+        <stop offset="25%" stop-color="#000000" stop-opacity="1" />
+        <stop offset="60%" stop-color="#000000" stop-opacity="0.9" />
+        <stop offset="85%" stop-color="#000000" stop-opacity="0.4" />
+        <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+    <g class="diceshadow" :class="{rollshadow: rolling}">
+      <ellipse cx="5" cy="60" rx="50" ry="70" transform="rotate(16)" fill="url('#dieshadow')"  opacity="0.20" stroke-width="0" />
+    </g>
     <g class="dice" :class="{rolling: rolling}">
       <g fill="#ffffff" stroke="#ffffff">
       <animateTransform v-if="rolling" attributeName="transform"
@@ -94,14 +106,22 @@ export default {
                         dur="0.75s"
                         animate="freeze"
                         repeatCount="indefinite"/>
-        <d20-generic-background :backgroundColor="backgroundColor" v-if="sides == 20" />
-        <d6-generic-background :backgroundColor="backgroundColor" v-if="sides == 6" />
-        <g v-if="sides == 20" >
+        <g v-if="sides == 20" transform="rotate(0) translate(0 0)">
+          <d20-generic-background :backgroundColor="backgroundColor" />
           <g v-if="fontType == 0">
             <d20-generic-numbers :fontColor="fontColor" :value="displayValue()" />
           </g>
           <g v-if="fontType == 1">
-            <d20-pixel-numbers :fontColor="fontColor" :value="displayValue()" />
+            <d20-rare-numbers :fontColor="fontColor" :value="displayValue()" />
+          </g>
+        </g>
+        <g v-if="sides == 6" transform="rotate(0) translate(0 0)">
+          <d6-generic-background :backgroundColor="backgroundColor" />
+          <g v-if="fontType == 0">
+            <d6-generic-numbers :fontColor="fontColor" :value="displayValue()" />
+          </g>
+          <g v-if="fontType == 1">
+            <d6-rare-numbers :fontColor="fontColor" :value="displayValue()" />
           </g>
         </g>
       </g>
@@ -110,11 +130,17 @@ export default {
 </template>
 
 <style>
-.dice {
+.dice, .diceshadow {
   transition: 0.5s ease-out;
 }
+
 .rolling {
-  transition: 2s linear;
-  transform: translate(0,-100px) scale(0.75);
+  transition: 1s linear;
+  transform: translate(0,-64px) scale(1.1);
+}
+.rollshadow {
+  transition: 1s linear;
+  transform: translate(-8px,32px) scale(0.8);
+  opacity: 0.5;
 }
 </style>
