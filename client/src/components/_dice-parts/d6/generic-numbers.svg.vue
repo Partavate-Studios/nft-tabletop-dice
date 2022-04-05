@@ -31,20 +31,6 @@ export default {
 <template>
   <g>
     <defs>
-      <linearGradient id="old" gradientTransform="rotate(45)">
-        <stop
-          stop-color="#000000"
-          stop-opacity="0.75"
-          offset="0%"/>
-        <stop
-          stop-color="#000000"
-          stop-opacity="0"
-          offset="90%"/>
-        <stop
-          stop-color="#000000"
-          stop-opacity="0"
-          offset="100%"/>
-      </linearGradient>
       <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="40%" fy="70%">
         <stop
           stop-color="#000000"

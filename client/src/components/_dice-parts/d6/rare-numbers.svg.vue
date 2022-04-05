@@ -31,22 +31,30 @@ export default {
 <template>
   <g>
     <defs>
-      <linearGradient id="dotshadow" gradientTransform="rotate(45)">
+      <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="40%" fy="70%">
         <stop
           stop-color="#000000"
-          stop-opacity="1"
+          stop-opacity="0"
           offset="0%"/>
         <stop
-          stop-color="#e6e6e6"
+          stop-color="#000000"
           stop-opacity="0"
-          offset="20%"/>
+          offset="40%"/>
         <stop
           stop-color="#000000"
-          stop-opacity="1"
-          offset="100%"/>
-      </linearGradient>
+          stop-opacity="0.5"
+          offset="110%"/>
+      </radialGradient>
     </defs>
-    <g fill="url('#dotshadow')" :stroke="none">
+    <g :fill="fontColor" :stroke="fontColor" stroke-opacity="0.25">
+      <rare-one v-if="value==1" />
+      <rare-two v-if="value==2" />
+      <rare-three v-if="value==3" />
+      <rare-four v-if="value==4" />
+      <rare-five v-if="value==5" />
+      <rare-six v-if="value==6" />
+    </g>
+    <g fill="url('#dotshade')" stroke="#000000" stroke-opacity="0.3">
       <rare-one v-if="value==1" />
       <rare-two v-if="value==2" />
       <rare-three v-if="value==3" />

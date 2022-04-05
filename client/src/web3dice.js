@@ -129,7 +129,7 @@ export const web3dice = {
 
   async mintRandomDice() {
     let price = 1000000000000000
-    let qty = 5
+    let qty = 500
     let value = String(price * qty)
     try {
       let minted = await this.diceContract.mintRandomDice({value: value})
@@ -162,7 +162,6 @@ export const web3dice = {
       console.log("Error: ", error)
     }
   },
-
 
   async getOwnedDice() {
     try {

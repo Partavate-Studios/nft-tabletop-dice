@@ -45,6 +45,7 @@ export default {
       web3dice.connect()
     },
     openMenu() {
+      web3dice.getOwnedDice()
       this.menu = true
     },
     closeMenu() {

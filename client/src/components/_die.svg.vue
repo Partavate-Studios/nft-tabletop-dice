@@ -56,9 +56,9 @@ export default {
     },
     fontType () {
       if (store.diceTraits[this.diceid]) {
-        return store.diceTraits[this.diceid].font % 2
+        return store.diceTraits[this.diceid].font
       }
-      return this.diceid %2
+      return this.diceid % 2
     },
     fontColor () {
       if (store.diceTraits[this.diceid]) {
