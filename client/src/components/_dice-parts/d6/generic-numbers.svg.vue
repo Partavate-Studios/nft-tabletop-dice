@@ -31,7 +31,7 @@ export default {
 <template>
   <g>
     <defs>
-      <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="40%" fy="70%">
+      <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="45%" fy="60%">
         <stop
           stop-color="#000000"
           stop-opacity="0"
