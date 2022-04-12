@@ -118,7 +118,7 @@ export default {
 
           <dice-menu :show="menu" />
 
-          <g transform="translate(0 42)">
+          <g transform="translate(0 120)">
             <die
               v-if="store.selectedDice[0] != null"
               transform="translate(-150 -10) scale(1.2)"
