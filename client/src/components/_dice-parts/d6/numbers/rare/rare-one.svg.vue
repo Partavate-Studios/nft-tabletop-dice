@@ -4,13 +4,12 @@ export default {
 </script>
 
 <template>
-<g transform="translate(0 -0) scale(1)">
-  <g>
-    <ellipse cx="-13" cy="-31.5" rx="10" ry="0.5"/>
-    <ellipse cx="0" cy="-33" rx="8.5" ry="0.4"/>
-    <ellipse cx="9.5" cy="-34.5" rx="7" ry="0.4"/>
-
-    <ellipse cx="0" cy="10" rx="8.5" ry="7.5"/>
+<g transform="translate(6 8) scale(2.5)">
+  <g
+     transform="matrix(0.9742179,-0.22560913,-0.22560913,-0.9742179,92.328757,-160.23465)">
+    <path
+       d="m -126.3457,-143.17304 -6.62374,1.53392 1.53393,6.62374 -2.20791,0.51131 0.5113,2.20792 2.20792,-0.51131 0.5113,2.20791 6.62374,-1.53392 z"
+        />
   </g>
 </g>
 </template>

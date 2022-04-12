@@ -30,31 +30,10 @@ export default {
 
 <template>
   <g>
-    <defs>
-      <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="40%" fy="70%">
-        <stop
-          stop-color="#000000"
-          stop-opacity="0"
-          offset="0%"/>
-        <stop
-          stop-color="#000000"
-          stop-opacity="0"
-          offset="40%"/>
-        <stop
-          stop-color="#000000"
-          stop-opacity="0.5"
-          offset="110%"/>
-      </radialGradient>
-    </defs>
     <g :fill="fontColor" :stroke="fontColor" stroke-opacity="0.25">
-      <rare-one v-if="value==1" />
-      <rare-two v-if="value==2" />
-      <rare-three v-if="value==3" />
-      <rare-four v-if="value==4" />
-      <rare-five v-if="value==5" />
-      <rare-six v-if="value==6" />
-    </g>
-    <g fill="url('#dotshade')" stroke="#000000" stroke-opacity="0.3">
+      <rect x="-8" y="-34" width="16" height="1" />
+      <rect x="-11" y="-32.5" width="10" height="1" />
+      <rect x="1" y="-32.5" width="10" height="1" />
       <rare-one v-if="value==1" />
       <rare-two v-if="value==2" />
       <rare-three v-if="value==3" />

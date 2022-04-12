@@ -108,7 +108,7 @@ export const web3dice = {
   },
 
   async delayedRoll(diceId) {
-    let rollDelay = Math.floor(Math.random() * 100)
+    let rollDelay = Math.floor(Math.random() * 20)
     setTimeout(() => {this.roll(diceId)}, rollDelay)
   },
 
@@ -129,7 +129,7 @@ export const web3dice = {
 
   async mintRandomDice() {
     let price = 1000000000000000
-    let qty = 500
+    let qty = 100
     let value = String(price * qty)
     try {
       let minted = await this.diceContract.mintRandomDice({value: value})
@@ -155,8 +155,7 @@ export const web3dice = {
     try {
       store.ownedDice.forEach(async (diceId, index) => {
         store.diceTraits[index] = await this.diceContract.getTraits(diceId)
-        console.log(store.diceTraits[index])
-        console.log(index)
+        console.log(index, store.diceTraits[index])
       }, this)
     } catch (error) {
       console.log("Error: ", error)
