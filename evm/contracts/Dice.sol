@@ -9,17 +9,38 @@ import "hardhat/console.sol";
 
 import "./DiceLibrary.sol";
 import "./ERC721SimpleEnumerable.sol";
+import "./RandomNameLibrary.sol";
 
 contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
     using Counters for Counters.Counter;
     using DiceLibrary for DiceLibrary.DiceStorage;
-    DiceLibrary.DiceStorage diceLib;
+    using RandomNameLibrary for RandomNameLibrary.WordStorage;
+
+    address payable accountsRecievable;
 
     Counters.Counter private _tokenIds;
+    DiceLibrary.DiceStorage diceLib;
+    RandomNameLibrary.WordStorage nameLib;
+
     string private _baseURIvalue;
 
-    constructor() ERC721("PolyDice dApp", "PolyDice") {
+    constructor(string[] memory adjectives, string[] memory nouns) ERC721("PolyDice dApp", "PolyDice") {
         _baseURIvalue = "https://dice.partavate.com";
+        accountsRecievable = payable(msg.sender);
+        addAdjectives(adjectives);
+        addNouns(nouns);
+    }
+
+    function addAdjectives(string[] memory adjectives) public onlyOwner {
+        for (uint i=0; i<adjectives.length; i++) {
+            nameLib.addAdjective(adjectives[i]);
+        }
+    }
+
+    function addNouns(string[] memory nouns) public onlyOwner {
+        for (uint i=0; i<nouns.length; i++) {
+            nameLib.addNoun(nouns[i]);
+        }
     }
 
     function setBaseURI(string calldata baseURI) public onlyOwner {
@@ -34,6 +55,38 @@ contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
         public view override returns (string memory) {
         require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
         return (string(abi.encodePacked(_baseURI(), diceLib.getTokenURIpath(tokenId))));
+    }
+
+    function mintRandomDice()
+       public payable returns (uint256 count) {
+        // TODO: price should be stored in a variable
+        uint256 priceEach = 0.001 ether;
+        require((msg.value >= priceEach), "not enough cash");
+        count = uint256(msg.value / priceEach);
+        for(uint i=0; i<count; i++) {
+            mintRandomDie();
+        }
+        (bool success,) = accountsRecievable.call{value: msg.value}("");
+        require(success, "Failed to send money");
+        return count;
+    }
+
+    function mintRandomDie() public returns (uint256) {
+        uint256 tokenId = _tokenIds.current();
+        string memory randomName = nameLib.getRandomName(tokenId);
+        uint8 sides = DiceLibrary.randomSides();
+        uint8 styleId = DiceLibrary.randomStyle(uint16(tokenId));
+        uint8 font = DiceLibrary.randomFont(uint16(tokenId));
+        diceLib.createDice(
+            tokenId,
+            randomName,
+            sides,
+            styleId,
+            font
+        );
+        _safeMint(msg.sender, tokenId);
+        _tokenIds.increment();
+        return tokenId;
     }
 
     function mintNFT(

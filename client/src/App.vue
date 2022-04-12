@@ -24,7 +24,7 @@ export default {
     chainName() {
       if ( store.web3.chain != null) {
         return store.web3.chain.name
-      }      
+      }
       return 'no chain found'
     },
     diceSelected() {
@@ -88,10 +88,10 @@ export default {
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
         </g>
 
-        <g v-else-if="!store.web3.isConnected || chainName != 'maticmum'">
+        <g v-else-if="!store.web3.isConnected || (chainName != 'maticmum' && false)">
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
           <text transform="translate(0 -50)">You are on the {{ chainName }} network.</text>
-          <g v-if="chainName != 'maticmum'">
+          <g v-if="chainName != 'maticmum' && false">
             <text>Please switch to Polygon Mumbai</text>
             <g transform="translate(0 70)">
               <rect x="-120" y="-30" width="240" height="60" fill="#222222" rx="15" ry="15" />
@@ -115,20 +115,20 @@ export default {
           </g>
 
 
-          <dice-menu :show="menu" />    
+          <dice-menu :show="menu" />
 
           <g transform="translate(0 150)">
-            <die 
+            <die
               v-if="store.selectedDice[0] != null"
               transform="translate(-150 -10) scale(1.2)"
               :diceid="store.selectedDice[0]"
             />
-            <die 
+            <die
               v-if="store.selectedDice[1] != null"
               transform="translate(0 10) scale(1.2)"
               :diceid="store.selectedDice[1]"
             />
-            <die 
+            <die
               v-if="store.selectedDice[2] != null"
               transform="translate(150 -10) scale(1.2)"
               :diceid="store.selectedDice[2]"
@@ -138,7 +138,7 @@ export default {
             <rect x="-300" y="-100" width="600" height="200" fill="#000000" stroke="#ffffff" stroke-opacity="0.0" fill-opacity="0.0" class="can-click" @click="roll()" />
           </g>
           <rect v-if="menu" x="-2000" y="-2000" width="4000" height="4000" fill="#000000" opacity="0.4" @click="closeMenu" />
-          <dice-menu :show="menu" @close="closeMenu()" />        
+          <dice-menu :show="menu" @close="closeMenu()" />
         </g>
       </g>
     </svg-container>
