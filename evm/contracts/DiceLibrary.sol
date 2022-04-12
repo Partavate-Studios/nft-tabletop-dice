@@ -20,7 +20,7 @@ library DiceLibrary {
     function createDice(
         DiceStorage storage self,
         uint256 tokenId,
-        string calldata name,
+        string memory name,
         uint8 sides,
         uint8 styleId,
         uint8 font
@@ -56,7 +56,7 @@ library DiceLibrary {
     }
 
     function getTraits(DiceStorage storage self, uint256 tokenId)
-        public
+        internal
         view
         returns (
             string memory name,
@@ -91,11 +91,25 @@ library DiceLibrary {
             );
     }
 
+    function randomStyle(uint16 nonce) internal view returns (uint8) {
+        uint8 maxStyle = 30;
+        uint8 randomStyleId = (uint8(random(nonce)) % (maxStyle + 1));
+        return randomStyleId;
+    }
+    function randomSides() internal pure returns (uint8) {
+        return uint8(20);
+    }
+    function randomFont(uint16 nonce) internal view returns (uint8) {
+        uint8 maxFonts = 1;
+        uint8 randomFontId = (uint8(random(nonce)) % (maxFonts + 1));
+        return randomFontId;
+    }
+
     function doRoll(
         DiceStorage storage self,
         uint256 tokenId,
         uint16 nonce
-    ) public view returns (uint8) {
+    ) internal view returns (uint8) {
         // TODO: Is there a better/cheaper way to do !(bool) -> int
         uint8 offset = (self.dice[tokenId].zeroBased) ? 0 : 1;
         uint8 result = uint8(
@@ -179,7 +193,7 @@ library DiceLibrary {
             foreground = '66cc66';
         }  else if (styleId == 24) {
             foreground = '880000';
-        } 
+        }
 
         return (foreground, background);
     }

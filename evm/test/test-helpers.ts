@@ -20,7 +20,7 @@ export async function deployContractWithLibrary(name: string, library: string): 
     const factoryOptions:FactoryOptions = {
       signer: await getTestWallet(),
       libraries: {
-          [library]: libraryDeployed.address,
+//          [library]: libraryDeployed.address,
       }
     };
 

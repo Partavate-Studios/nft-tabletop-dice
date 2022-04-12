@@ -6,7 +6,8 @@ export const web3dice = {
   provider: null,
   signer: null,
   diceContract: null,
-  diceContractAddress: '0x9AC5Ce72dB012e19BBB7e9fb05cb614fA2d58938', //what will be the best way to populate this? A: (@excalq) the HH deploy task!
+  //diceContractAddress: '0x9AC5Ce72dB012e19BBB7e9fb05cb614fA2d58938', //what will be the best way to populate this? A: (@excalq) the HH deploy task!
+  diceContractAddress: '0x80D0880F284037f4E2e133392b79deb39789c25C',
 
   async init() {
     try {
@@ -30,15 +31,14 @@ export const web3dice = {
       }
     })
 
+
     //todo - if we were going multichain, we would need to get the correct
     //address for the contract based on which network is currently active
-
-    this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.provider)
-
     console.log ('Wallet provider found')
-    if (parseInt(store.web3.chain.chainId) == 80001) {
+    console.log('chain id: ', store.web3.chain.chainId)
+    //if (parseInt(store.web3.chain.chainId) == 80001) {
       this.connect()
-    }
+    //}
   },
 
   async connect() {
@@ -48,10 +48,14 @@ export const web3dice = {
       console.log('Error: ' + e.message)
       return
     }
-    this.signer = this.provider.getSigner()
+    this.signer = await this.provider.getSigner()
+    this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
+    console.log(await this.diceContract.address)
 
-    this.signer.getAddress().then( address => {
+    this.signer.getAddress().then( async (address) => {
+      console.log('signer address found')
       store.address = address
+      this.diceContract.connect(this.signer)
       this.getOwnedDice()
       store.web3.isConnected = true
     }, this)
@@ -113,6 +117,30 @@ export const web3dice = {
     }
   },
 
+  async mintRandomDice() {
+    let price = 1000000000000000
+    let qty = 5
+    let value = String(price * qty)
+    try {
+      let minted = await this.diceContract.mintRandomDice({value: value})
+      console.log('Minted new dice: ', minted)
+      return true
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+    return false
+  },
+
+  async mintRandomDie() {
+    try {
+      await this.diceContract.mintRandomDie()
+      return true
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+    return false
+  },
+
   async getTraits() {
     try {
       store.ownedDice.forEach(async (diceId, index) => {
@@ -129,6 +157,7 @@ export const web3dice = {
   async getOwnedDice() {
     try {
       store.ownedDice  = await this.diceContract.tokenListOfOwner(store.address)
+      console.log('dice loaded: ', store.ownedDice)
       await this.getTraits()
     } catch (error) {
       store.ownedDice  = []
