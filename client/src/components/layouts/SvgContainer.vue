@@ -22,9 +22,9 @@ export default {
     :height="height"
     :viewBox="(width / -2 ) + ' ' + (height / -2 ) + ' ' + width + ' ' + height">
     <defs>
-      <linearGradient id="background" gradientTransform="rotate(110)">
-        <stop offset="1%" stop-color="#1f1f66" stop-opacity="1" />
-        <stop offset="100%" stop-color="#160a1e" stop-opacity="1" />
+      <linearGradient id="background" gradientTransform="rotate(100)">
+        <stop offset="30%" stop-color="#1f1f66" stop-opacity="1" />
+        <stop offset="90%" stop-color="#160a1e" stop-opacity="1" />
       </linearGradient>
     </defs>
 

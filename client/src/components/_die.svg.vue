@@ -94,7 +94,7 @@ export default {
       </radialGradient>
     </defs>
     <g class="diceshadow" :class="{rollshadow: rolling}">
-      <ellipse cx="10" cy="40" rx="50" ry="70" transform="rotate(16)" fill="url('#dieshadow')"  opacity="0.20" stroke-width="0" />
+      <ellipse cx="0" cy="60" rx="80" ry="30" transform="rotate(0)" fill="url('#dieshadow')"  opacity="0.25" stroke-width="0" />
     </g>
     <g class="dice" :class="{rolling: rolling}">
       <g fill="#ffffff" stroke="#ffffff">
