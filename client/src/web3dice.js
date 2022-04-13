@@ -1,13 +1,14 @@
 import { store } from './store.js'
 import { ethers } from "ethers"
 import Dice from '../../evm/artifacts/contracts/Dice.sol/TabletopDiceNFT.json'
+import Addresses from '../../evm/addresses/published-addresses.json'
 
 export const web3dice = {
   provider: null,
   signer: null,
   diceContract: null,
-  //diceContractAddress: '0x9AC5Ce72dB012e19BBB7e9fb05cb614fA2d58938', //what will be the best way to populate this? A: (@excalq) the HH deploy task!
-  diceContractAddress: '0x80D0880F284037f4E2e133392b79deb39789c25C',
+
+  diceContractAddress: null,
 
   async init() {
     try {
@@ -18,10 +19,19 @@ export const web3dice = {
     }
     store.web3.hasWallet = true
 
+
     try {
       store.web3.chain = await this.provider.getNetwork()
     } catch (e) {
       console.log('Error: ' + e.message)
+    }
+
+    //Choose the contract address based on the chainId
+    if (String(store.web3.chain.chainId) in Addresses) {
+      this.diceContractAddress = Addresses[store.web3.chain.chainId]
+      store.web3.validNetwork = true
+    } else {
+      console.log('no known contract address, is this a valid network?')
     }
 
     this.provider.on("network", (newNetwork, oldNetwork) => {
@@ -98,7 +108,7 @@ export const web3dice = {
   },
 
   async delayedRoll(diceId) {
-    let rollDelay = Math.floor(Math.random() * 100)
+    let rollDelay = Math.floor(Math.random() * 20)
     setTimeout(() => {this.roll(diceId)}, rollDelay)
   },
 
@@ -119,7 +129,7 @@ export const web3dice = {
 
   async mintRandomDice() {
     let price = 1000000000000000
-    let qty = 5
+    let qty = 20
     let value = String(price * qty)
     try {
       let minted = await this.diceContract.mintRandomDice({value: value})
@@ -145,14 +155,12 @@ export const web3dice = {
     try {
       store.ownedDice.forEach(async (diceId, index) => {
         store.diceTraits[index] = await this.diceContract.getTraits(diceId)
-        console.log(store.diceTraits[index])
-        console.log(index)
+        console.log(index, store.diceTraits[index])
       }, this)
     } catch (error) {
       console.log("Error: ", error)
     }
   },
-
 
   async getOwnedDice() {
     try {

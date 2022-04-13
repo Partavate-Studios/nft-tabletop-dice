@@ -74,9 +74,9 @@ contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
     function mintRandomDie() public returns (uint256) {
         uint256 tokenId = _tokenIds.current();
         string memory randomName = nameLib.getRandomName(tokenId);
-        uint8 sides = DiceLibrary.randomSides();
-        uint8 styleId = DiceLibrary.randomStyle(uint16(tokenId));
-        uint8 font = DiceLibrary.randomFont(uint16(tokenId));
+        uint8 sides = DiceLibrary.randomSides(uint16(tokenId));
+        uint8 styleId = DiceLibrary.randomStyle(uint16(tokenId * sides));
+        uint8 font = DiceLibrary.randomFont(uint16(tokenId * styleId));
         diceLib.createDice(
             tokenId,
             randomName,

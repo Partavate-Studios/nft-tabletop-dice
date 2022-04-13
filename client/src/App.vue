@@ -45,6 +45,7 @@ export default {
       web3dice.connect()
     },
     openMenu() {
+      web3dice.getOwnedDice()
       this.menu = true
     },
     closeMenu() {
@@ -88,10 +89,10 @@ export default {
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
         </g>
 
-        <g v-else-if="!store.web3.isConnected || (chainName != 'maticmum' && false)">
+        <g v-else-if="!store.web3.isConnected">
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
           <text transform="translate(0 -50)">You are on the {{ chainName }} network.</text>
-          <g v-if="chainName != 'maticmum' && false">
+          <g v-if="!store.web3.validNetwork">
             <text>Please switch to Polygon Mumbai</text>
             <g transform="translate(0 70)">
               <rect x="-120" y="-30" width="240" height="60" fill="#222222" rx="15" ry="15" />
@@ -117,7 +118,7 @@ export default {
 
           <dice-menu :show="menu" />
 
-          <g transform="translate(0 150)">
+          <g transform="translate(0 120)">
             <die
               v-if="store.selectedDice[0] != null"
               transform="translate(-150 -10) scale(1.2)"

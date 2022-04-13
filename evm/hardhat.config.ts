@@ -19,7 +19,6 @@ const config: HardhatUserConfig = {
   solidity: "0.8.6",
   networks: {
     hardhat: {
-      chainId: 1337
     },
     localhost: {
       chainId: 1337
