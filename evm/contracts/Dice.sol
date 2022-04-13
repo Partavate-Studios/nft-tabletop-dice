@@ -59,6 +59,7 @@ contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
 
     function mintRandomDice()
        public payable returns (uint256 count) {
+        // TODO: price should be stored in a variable
         uint256 priceEach = 0.001 ether;
         require((msg.value >= priceEach), "not enough cash");
         count = uint256(msg.value / priceEach);
