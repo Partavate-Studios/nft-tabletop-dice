@@ -113,10 +113,11 @@ export const web3dice = {
   },
 
   async roll(diceId) {
+    let nftId = store.ownedDice[diceId]
     store.isRolling[diceId] = true
     try {
       const nonce = parseInt(new Date().getTime() % 512);
-      const roll = await this.diceContract.roll(diceId, nonce)
+      const roll = await this.diceContract.roll(nftId, nonce)
       store.lastRoll[diceId] = roll
       setTimeout(() => {
         store.isRolling[diceId] = false

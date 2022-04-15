@@ -32,7 +32,7 @@ export default {
       if (this.diceId == null) {
         this.$emit('add')
       } else {
-        this.$emit('remove')
+        this.$emit('smartClick')
       }
     },
 

@@ -46,6 +46,15 @@ export default {
     remove(id) {
       store.selectedDice[id] = null
     },
+    selectOrRemove(id) {
+      let diceId = store.selectedDice[id]
+      if (diceId == this.ownedDiceIndex) {
+        this.remove(id)
+      } else {
+        this.ownedDiceIndex = diceId
+      }
+
+    },
     async mintRandomDie() {
       const dice = await web3dice.mintRandomDie()
       if (dice) {
@@ -198,12 +207,12 @@ export default {
         <text font-size="0.5em" fill="#cccccc">Die #{{ store.ownedDice[ownedDiceIndex] }}</text>
       </g>
 
-      <g stroke-width="4" stroke="#ffffff" transform="translate(-160 60)" v-if="isMoreLeft">
+      <g stroke-width="4" stroke="#ffffff" transform="translate(-220 -20)" v-if="isMoreLeft">
         <line x1="20" y1="-40" x2="-20" y2="0" />
         <line x1="20" y1="40" x2="-20" y2="0" />
         <rect x="-45" y="-55" width="90" height="110" fill="#000000" fill-opacity="0" stroke-width="0" class="can-click" @click="goLeft()" />
       </g>
-      <g stroke-width="4" stroke="#ffffff" transform="translate(160 60)" v-if="isMoreRight">
+      <g stroke-width="4" stroke="#ffffff" transform="translate(220 -20)" v-if="isMoreRight">
         <line x1="-20" y1="-40" x2="20" y2="0" />
         <line x1="-20" y1="40" x2="20" y2="0" />
         <rect x="-45" y="-55" width="90" height="110" fill="#000000" fill-opacity="0" stroke-width="0" class="can-click" @click="goRight()" />
@@ -237,6 +246,7 @@ export default {
         :selected="store.selectedDice[0] == ownedDiceIndex"
         v-on:add="add(0)"
         v-on:remove="remove(0)"
+        v-on:smartClick="selectOrRemove(0)"
       />
       <selected-die-box
         transform="translate(0 0)"
@@ -244,6 +254,7 @@ export default {
         :selected="store.selectedDice[1] == ownedDiceIndex"
         v-on:add="add(1)"
         v-on:remove="remove(1)"
+        v-on:smartClick="selectOrRemove(1)"
       />
       <selected-die-box
         transform="translate(210 0)"
@@ -251,6 +262,7 @@ export default {
         :selected="store.selectedDice[2] == ownedDiceIndex"
         v-on:add="add(2)"
         v-on:remove="remove(2)"
+        v-on:smartClick="selectOrRemove(2)"
       />
     </g>
 
