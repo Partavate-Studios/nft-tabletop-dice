@@ -118,7 +118,10 @@ export const web3dice = {
       const nonce = parseInt(new Date().getTime() % 512);
       const roll = await this.diceContract.roll(diceId, nonce)
       store.lastRoll[diceId] = roll
-      setTimeout(() => {store.isRolling[diceId] = false}, 1000)
+      setTimeout(() => {
+        store.isRolling[diceId] = false
+        console.log("Roll for #" + store.diceTraits[diceId].name + ": ", roll)
+      }, 1000)
       return roll
     } catch (error) {
       console.log("Error: ", error)
@@ -155,7 +158,7 @@ export const web3dice = {
     try {
       store.ownedDice.forEach(async (diceId, index) => {
         store.diceTraits[index] = await this.diceContract.getTraits(diceId)
-        console.log(index, store.diceTraits[index])
+        //console.log(index, store.diceTraits[index])
       }, this)
     } catch (error) {
       console.log("Error: ", error)

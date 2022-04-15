@@ -28,7 +28,7 @@ export default {
       </linearGradient>
     </defs>
 
-    <rect :x="width / -2" :y="height / -2" :width="width" :height="height" fill="url(#background)" stroke="#ffffff" stroke-opacity="0.3" stroke-width="2" rx="25" ry="25" />
+    <rect :x="width / -2" :y="height / -2" :width="width" :height="height" fill="url(#background)" stroke="#661f66" stroke-opacity="1" stroke-width="2" rx="25" ry="25" />
 
     <g>
       <slot />

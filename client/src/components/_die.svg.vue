@@ -16,6 +16,14 @@ export default {
       type: Number,
       default: 1
     },
+    floating: {
+      type: Boolean,
+      default: false
+    },
+    selected: {
+      type: Boolean,
+      default: false
+    }
   },
   data () {
     return {
@@ -32,7 +40,7 @@ export default {
   },
   methods: {
     rollNumbers () {
-      this.rollingNumber = ((this.rollingNumber) % this.sides) + 1
+      this.rollingNumber = ((this.rollingNumber + Math.floor((Math.random() * 5))) % this.sides) + 1
       if (this.rolling) {
         setTimeout(this.rollNumbers, 200)
       }
@@ -93,10 +101,13 @@ export default {
         <stop offset="100%" stop-color="#000000" stop-opacity="0" />
       </radialGradient>
     </defs>
-    <g class="diceshadow" :class="{rollshadow: rolling}">
-      <ellipse cx="0" cy="40" rx="60" ry="30" transform="rotate(0)" fill="url('#dieshadow')"  opacity="0.20" stroke-width="0" />
+    <g v-if="selected">
+      <rect x="-55" y="-55" width="110" height="110" fill="none" stroke="#ffffff" stroke-width="3" rx="10" ry="10" stroke-opacity="0.4" />
     </g>
-    <g class="dice" :class="{rolling: rolling}">
+    <g class="diceshadow" :class="{rollshadow: rolling, selectedshadow: selected, floatshadow: floating}">
+      <ellipse cx="0" cy="40" rx="60" ry="30" transform="rotate(0)" fill="url('#dieshadow')"  opacity="0.30" stroke-width="0" />
+    </g>
+    <g class="dice" :class="{rolling: rolling, selected: selected, floating: floating}">
       <g fill="#ffffff" stroke="#ffffff">
       <animateTransform v-if="rolling" attributeName="transform"
                         attributeType="XML"
@@ -107,7 +118,7 @@ export default {
                         animate="freeze"
                         repeatCount="indefinite"/>
         <g v-if="sides == 20" transform="rotate(0) translate(0 0)">
-          <d20-generic-background :backgroundColor="backgroundColor" />
+          <d20-generic-background :background-color="backgroundColor" />
           <g v-if="fontType == 0">
             <d20-generic-numbers :fontColor="fontColor" :value="displayValue()" />
           </g>
@@ -116,12 +127,12 @@ export default {
           </g>
         </g>
         <g v-if="sides == 6" transform="rotate(0) translate(0 0)">
-          <d6-generic-background :backgroundColor="backgroundColor" />
+          <d6-generic-background :background-color="backgroundColor" />
           <g v-if="fontType == 0">
-            <d6-generic-numbers :fontColor="fontColor" :value="displayValue()" />
+            <d6-generic-numbers :font-color="fontColor" :value="displayValue()" />
           </g>
           <g v-if="fontType == 1">
-            <d6-rare-numbers :fontColor="fontColor" :value="displayValue()" />
+            <d6-rare-numbers :font-color="fontColor" :value="displayValue()" />
           </g>
         </g>
       </g>
@@ -131,7 +142,7 @@ export default {
 
 <style>
 .dice, .diceshadow {
-  transition: 0.5s ease-out;
+  transition: 0.25s ease-out;
 }
 
 .rolling {
@@ -142,5 +153,26 @@ export default {
   transition: 1s linear;
   transform: translate(-8px,32px) scale(0.8);
   opacity: 0.5;
+}
+
+.floating {
+  transition: 0.1s linear;
+  transform: translate(0,-250px) scale(2);
+}
+.floatshadow {
+  transition: 0.1s linear;
+  transform: translate(0, 15px) scale(0.5);
+  opacity: 0.8;
+}
+
+.selected {
+  transition: 0.1s linear;
+  transform: scale(0.5);
+  opacity: 0.4;
+}
+.selectedshadow {
+  transition: 0.1s linear;
+  transform: scale(0.65);
+  opacity: 1;
 }
 </style>

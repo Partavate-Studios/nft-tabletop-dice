@@ -55,16 +55,14 @@ export default {
       if (!this.diceSelected) {
         this.menu = true
       } else {
-        //let traits = await web3dice.getTraits(diceId)
-        //console.log('traits: ', traits)
         if (store.selectedDice[0] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[0])
+          web3dice.delayedRoll(store.selectedDice[0])
         }
         if (store.selectedDice[1] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[1])
+          web3dice.delayedRoll(store.selectedDice[1])
         }
         if (store.selectedDice[2] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[2])
+          web3dice.delayedRoll(store.selectedDice[2])
         }
       }
     },
@@ -78,7 +76,7 @@ export default {
 <template>
   <div id="svgContainer">
     <svg-container>
-      <g fill="#ffffff"  text-anchor="middle" dominant-baseline="middle" font-size="1.75em">
+      <g fill="#ffffff" text-anchor="middle" dominant-baseline="middle" font-size="1.75em">
 
         <polydice-logo transform="scale(1.1) translate(-290 -420)" opacity="0.2" />
         <polydice-icon transform="scale(4) translate(-190 -120)" opacity="0.01" />
@@ -134,11 +132,11 @@ export default {
               transform="translate(150 -10) scale(1.2)"
               :diceid="store.selectedDice[2]"
             />
-            <rect v-if="!diceSelected" x="-200" y="-50" width="400" height="100" fill="#000000" stroke="#ffffff" stroke-opacity="0.2" fill-opacity="0.2" rx="10" ry="10" class="can-click" @click="roll()" />
+            <rect v-if="!diceSelected" x="-200" y="-50" width="400" height="100" fill="#000000" stroke="#ffffff" stroke-opacity="0.2" fill-opacity="0.2" rx="10" ry="10" class="can-click" />
             <text v-if="!diceSelected">Select Dice</text>
             <rect x="-300" y="-100" width="600" height="200" fill="#000000" stroke="#ffffff" stroke-opacity="0.0" fill-opacity="0.0" class="can-click" @click="roll()" />
           </g>
-          <rect v-if="menu" x="-2000" y="-2000" width="4000" height="4000" fill="#000000" opacity="0.4" @click="closeMenu" />
+          <rect v-if="menu" x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="closeMenu" />
           <dice-menu :show="menu" @close="closeMenu()" />
         </g>
       </g>
