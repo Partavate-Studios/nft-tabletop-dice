@@ -1,4 +1,4 @@
-import { deployContractWithLibrary, getTestWallet } from "./test-helpers";
+import { deployContract, getTestWallet } from "./test-helpers";
 import { waffle, run } from "hardhat";
 import { expect } from "chai";
 import sinon from "sinon";
@@ -8,11 +8,12 @@ describe("tasks", () => {
     // await hre.ethers.getSigners()
   });
 
-  describe("deploy-all-contracts", () => {
+  describe("deploy", () => {
+    //TODO: seems strange to test this but also not use it to deploy in the tests themselves?
     it("calls through and returns the transaction object", async () => {
       sinon.stub(process.stdout, "write");
 
-      await run("deploy-all-contracts");
+      await run("deploy");
       await expect(process.stdout.write).to.have.been.calledWithMatch(
         /Contract address: 0x[0-9a-fA-F]{40}/
       );
@@ -21,8 +22,8 @@ describe("tasks", () => {
 
   describe("mint-nft", () => {
     beforeEach(async () => {
-      const deployedContract = await deployContractWithLibrary("TabletopDiceNFT", "DiceLibrary");
-      
+      const deployedContract = await deployContract("TabletopDiceNFT");
+
       process.env.NFT_CONTRACT_ADDRESS = deployedContract.address;
     });
 
@@ -30,7 +31,7 @@ describe("tasks", () => {
       const wallet = await getTestWallet();
       sinon.stub(process.stdout, "write");
 
-      await run("mint-nft", { 
+      await run("mint-nft", {
           owner: wallet.address,
           name: "Le 🎲",
           sides: 10,

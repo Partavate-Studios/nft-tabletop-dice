@@ -12,28 +12,15 @@ afterEach(() => {
   sinon.restore();
 });
 
-export async function deployContractWithLibrary(name: string, library: string): Promise<Contract> {
-    // First deploy the Library, since an address is required
-    const LibraryPromise = hardhatEthers.getContractFactory(library);
-    const libraryDeployed = await LibraryPromise.then((contractFactory) => contractFactory.deploy());
+export async function deployContract(name: string): Promise<Contract> {
+  const DiceFactory = await hardhatEthers.getContractFactory(
+    "TabletopDiceNFT"
+  )
+  const dice = await DiceFactory.deploy(
+    ["Benny"],
+    ["Hicks"])
 
-    const factoryOptions:FactoryOptions = {
-      signer: await getTestWallet(),
-      libraries: {
-//          [library]: libraryDeployed.address,
-      }
-    };
-
-    return hardhatEthers
-      .getContractFactory(name, factoryOptions)
-      .then((contractFactory) => contractFactory.deploy());
-}
-
-
-export async function deployTestContract(name: string): Promise<Contract> {
-  return hardhatEthers
-    .getContractFactory(name, await getTestWallet())
-    .then((contractFactory) => contractFactory.deploy());
+  return await dice.deployed();
 }
 
 export async function getTestWallet(): Promise<SignerWithAddress> {
