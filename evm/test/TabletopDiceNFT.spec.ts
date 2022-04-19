@@ -2,7 +2,7 @@ import { ethers, waffle } from "hardhat";
 import { Contract, Wallet } from "ethers";
 import { expect } from "chai";
 import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { deployContractWithLibrary } from "./test-helpers";
+import { deployContract } from "./test-helpers";
 
 describe("TabletopDiceNFT", () => {
   const BASE_URI = "https://example.com";
@@ -18,7 +18,7 @@ describe("TabletopDiceNFT", () => {
 
   beforeEach(async () => {
     [wallet] = waffle.provider.getWallets();
-    deployedContract = await deployContractWithLibrary("TabletopDiceNFT", "DiceLibrary");
+    deployedContract = await deployContract("TabletopDiceNFT");
   });
 
   async function mintNftDefault(): Promise<TransactionResponse> {
@@ -140,8 +140,8 @@ describe("TabletopDiceNFT", () => {
       expect(nftBalance).to.eq("1");
 
       let die = await deployedContract.getTraits(0);
-      //expect(die.name).to.equal("test");
-      expect(die.sides).to.equal(20);
+      expect(die.name).to.equal("Benny Hicks");
+      //expect(die.sides).to.equal(20);
 
     });
   });

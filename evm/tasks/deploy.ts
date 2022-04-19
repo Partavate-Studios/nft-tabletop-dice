@@ -2,8 +2,8 @@ import { task, types } from "hardhat/config"
 import { Contract } from "ethers"
 import { TransactionResponse } from "@ethersproject/abstract-provider"
 import { env } from "../lib/env"
+import { logDeployment } from "../lib/logDeployment"
 import { getContract } from "../lib/contract"
-import * as fs from "fs"
 import { string } from "hardhat/internal/core/params/argumentTypes"
 
 task("deploy", "Deploy NFT contract").setAction(async (_, hre) => {
@@ -20,25 +20,14 @@ task("deploy", "Deploy NFT contract").setAction(async (_, hre) => {
     "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
     "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight",
     "🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹" ])
+
   await dice.deployed()
   const name = await dice.name()
-  console.log('name: ', name)
+  process.stdout.write(`Contract name: ${name}\n`)
   process.stdout.write(`Contract address: ${dice.address}\n`)
 
   let chaindata = await hre.ethers.provider.getNetwork()
-  let addressDirectory = 'addresses'
-  let addressFile = 'published-addresses.json'
-  let filePath = addressDirectory + '/' + addressFile
-  if (!fs.existsSync(addressDirectory)){
-      fs.mkdirSync(addressDirectory);
-  }
-  let addressData: {[key: string]: string} = {}
-  if (fs.existsSync(filePath)){
-    let data = fs.readFileSync(filePath, {encoding:'utf8', flag:'r'});
-    addressData = JSON.parse(data)
-  }
-  addressData[chaindata.chainId.toString()] = dice.address
-  fs.writeFileSync(filePath, JSON.stringify(addressData)+'\n')
+  logDeployment(chaindata.chainId, dice.address)
 
   return dice.address
 })

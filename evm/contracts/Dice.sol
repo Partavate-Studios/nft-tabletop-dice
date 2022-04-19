@@ -10,8 +10,9 @@ import "hardhat/console.sol";
 import "./DiceLibrary.sol";
 import "./ERC721SimpleEnumerable.sol";
 import "./RandomNameLibrary.sol";
+import "./Version.sol";
 
-contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
+contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     using Counters for Counters.Counter;
     using DiceLibrary for DiceLibrary.DiceStorage;
     using RandomNameLibrary for RandomNameLibrary.WordStorage;
@@ -24,7 +25,8 @@ contract TabletopDiceNFT is Ownable, ERC721SimpleEnumerable {
 
     string private _baseURIvalue;
 
-    constructor(string[] memory adjectives, string[] memory nouns) ERC721("PolyDice dApp", "PolyDice") {
+    constructor(string[] memory adjectives, string[] memory nouns)
+        ERC721(string(abi.encodePacked("PolyDice dApp v", version)), "PolyDice") {
         _baseURIvalue = "https://dice.partavate.com";
         accountsRecievable = payable(msg.sender);
         addAdjectives(adjectives);
