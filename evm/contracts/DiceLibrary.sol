@@ -8,7 +8,7 @@ library DiceLibrary {
     struct Dice {
         string name;
         uint8 sides;
-        uint8 styleId;
+        uint8 styleId; // TODO: colorthemeid?
         uint8 font;
         bool zeroBased;
     }
