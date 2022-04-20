@@ -1,6 +1,6 @@
 <?php 
 // Expected URL Schema:
-// /metadata/die.{size}.{background}.{foreground}.{font}.svg
+// /metadata/die.{size}.{foreground}.{background}.{font}.svg
 //
 // Development testing:
 // php -S localhost:8000 die.svg.php
@@ -18,13 +18,9 @@ if ((int) $matches['font'] > $FONT_COUNT - 1) {
 
 // Generate a default image if the params are invalid. Hence the default fallback values
 $sides = $matches['sides'] ?? 10;
-$backgroundColor = $matches['bgColor'] ?? '8b10d0';
 $foregroundColor = $matches['fgColor'] ?? '66CC66';
+$backgroundColor = $matches['bgColor'] ?? '8b10d0';
 $font = $matches['font'] ?? 1;
-
-// $backgroundColor='8b10d0';
-// $foregroundColor='66CC66';
-// $font=1;
 
 // --- BODY OUTPUT ---
 
