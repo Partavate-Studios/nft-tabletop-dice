@@ -1,4 +1,5 @@
 <?php 
+# Path Schema: /metadata/<TokenName>/<sides>/<fgColorHex>/<bgColorHex>/<fontId>
 
 header('Content-Type: application/json');
 
