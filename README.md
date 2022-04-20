@@ -55,9 +55,9 @@ export KUBECONFIG=$HOME/.kube/linode
 Deploy all the things!
 
 ```
-kubectl -f deployment/polydice-service.yaml
-kubectl -f deployment/polydice-deployment.yaml
-kubectl -f deployment/polydice-ingressroute.yaml
+kubectl apply -f deployment/polydice-service.yaml
+kubectl apply -f deployment/polydice-deployment.yaml
+kubectl apply -f deployment/polydice-ingressroute.yaml
 ```
 
 Traefik should configure a new router to [https://dice.partavate.com](https://dice.partavate.com).
