@@ -10,8 +10,8 @@ export default defineConfig({
     outDir: './public',
     emptyOutDir: false,
     chunkSizeWarningLimit: 1000,
-    // build breaks refs to `this.store` in methods of `SelectedDieBox.vue`. Disabling minify to debug
-    minify: false,
+    // OPTIONAL: Disable minify to debug in docker context
+    minify: true,
   },
   plugins: [vue()],
   resolve: {
