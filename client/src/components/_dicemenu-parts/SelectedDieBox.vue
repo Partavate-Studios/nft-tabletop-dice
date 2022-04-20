@@ -100,15 +100,15 @@ export default {
     },
     diceLabelForground(diceId) {
       let colors = this.getDivergentColors(
-        this.store.diceTraits[diceId].fgColor,
-        this.store.diceTraits[diceId].bgColor
+        store.diceTraits[diceId].fgColor,
+        store.diceTraits[diceId].bgColor
       )
       return colors.a
     },
     diceLabelBackground(diceId) {
       let colors = this.getDivergentColors(
-        this.store.diceTraits[diceId].fgColor,
-        this.store.diceTraits[diceId].bgColor
+        store.diceTraits[diceId].fgColor,
+        store.diceTraits[diceId].bgColor
       )
       return colors.b
     }
