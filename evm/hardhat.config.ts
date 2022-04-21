@@ -11,6 +11,7 @@ import("./tasks/accounts");
 import("./tasks/deploy");
 import("./tasks/mint");
 import("./tasks/roll");
+import("./tasks/verify");
 
 import { HardhatUserConfig } from "hardhat/config";
 
