@@ -2,7 +2,6 @@
 import * as dotenv from "dotenv";
 
 import { task } from "hardhat/config";
-import "@nomiclabs/hardhat-waffle";
 
 dotenv.config();
 

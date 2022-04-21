@@ -1,10 +1,5 @@
-import { task, types } from "hardhat/config"
-import { Contract } from "ethers"
-import { TransactionResponse } from "@ethersproject/abstract-provider"
-import { env } from "../lib/env"
+import { task } from "hardhat/config"
 import { logDeployment } from "../lib/logDeployment"
-import { getContract } from "../lib/contract"
-import { string } from "hardhat/internal/core/params/argumentTypes"
 
 task("deploy", "Deploy NFT contract").setAction(async (_, hre) => {
   const DiceFactory = await hre.ethers.getContractFactory(
