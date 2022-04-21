@@ -12,22 +12,12 @@ import "./ERC721SimpleEnumerable.sol";
 import "./RandomNameLibrary.sol";
 import "./Version.sol";
 
-/*
-TODO:
-Owner can change the minting cost per die.
-Owner can change payment receiver address.
-Owner can mint a die to specification and for an arbitrary owner.
-Owner can mint batch of random dice for an arbitrary owner.
-Owner can enable add new types of die by adding another options for "sides".
-
-*/
-
 contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     using Counters for Counters.Counter;
     using DiceLibrary for DiceLibrary.DiceStorage;
     using RandomNameLibrary for RandomNameLibrary.WordStorage;
 
-    uint256 pricePerDie;
+    uint256 pricePerDie = 0.001 ether;
     uint256 constant maxDicePerTransaction = 3;
     address payable accountsRecievable;
 
@@ -41,13 +31,104 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         ERC721(string(abi.encodePacked("PolyDice dApp v", version)), "PolyDice") {
         _baseURIvalue = "https://dice.partavate.com";
         accountsRecievable = payable(msg.sender);
-        addAdjectives(adjectives);
-        addNouns(nouns);
+        addWords(adjectives, nouns);
         pricePerDie = 0.001 ether;
+        diceLib.possibleSides.push(6);
+        diceLib.possibleSides.push(20);
+        diceLib.maxThemeValue = 30;
+        diceLib.maxFontValue = 1;
     }
 
-    function updateMintingCost(uint256 newCost) public onlyOwner {
+    function _mintDie(
+        string memory name,
+        uint8 sides,
+        uint8 styleId,
+        uint8 font,
+        address reciever
+    ) internal returns (uint256 tokenId) {
+        tokenId = _tokenIds.current();
+        diceLib.createDice(tokenId, name, sides, styleId, font);
+        //safe mint will emit a transfer event
+        _safeMint(reciever, tokenId);
+        _tokenIds.increment();
+        return tokenId;
+    }
+
+    function _mintRandomDie(address reciever) internal returns (uint256 tokenId) {
+        uint256 nonce = _tokenIds.current();
+        string memory randomName = nameLib.getRandomName(nonce);
+        (uint8 sides, uint8 styleId, uint8 font) = diceLib.getRandomAttributes(uint16(nonce));
+        return _mintDie(
+            randomName,
+            sides,
+            styleId,
+            font,
+            reciever
+        );
+    }
+
+    /***** Owner Methods ******/
+
+    function addPossibleSides(uint8 sides) external onlyOwner {
+        diceLib.possibleSides.push(sides);
+    }
+
+    function setDiePrice(uint256 newCost) external onlyOwner {
         pricePerDie = newCost;
+    }
+
+    function setAccountsRecievable(address payable newReciver) external onlyOwner {
+        accountsRecievable = newReciver;
+    }
+
+    function addWords(string[] memory adjectives, string[] memory nouns) public onlyOwner {
+        for (uint i=0; i<adjectives.length; i++) {
+            nameLib.addAdjective(adjectives[i]);
+        }
+        for (uint i=0; i<nouns.length; i++) {
+            nameLib.addNoun(nouns[i]);
+        }
+    }
+
+    function setBaseURI(string calldata baseURI) external onlyOwner {
+        _baseURIvalue = baseURI;
+    }
+
+    function mintDie(
+        string memory name,
+        uint8 sides,
+        uint8 styleId,
+        uint8 font,
+        address reciever
+    ) public onlyOwner returns (uint256 tokenId) {
+        return _mintDie(name, sides, styleId, font, reciever);
+    }
+
+    function mintRandomDie(address reciever) public onlyOwner returns (uint256 tokenId) {
+        uint256 nonce = _tokenIds.current();
+        string memory randomName = nameLib.getRandomName(nonce);
+        (uint8 sides, uint8 styleId, uint8 font) = diceLib.getRandomAttributes(uint16(nonce));
+        return _mintDie(
+            randomName,
+            sides,
+            styleId,
+            font,
+            reciever
+        );
+    }
+
+    function mintRandomDice(uint8 count, address reciever) public onlyOwner {
+        for (uint8 i=0; i < count; i++) {
+            _mintRandomDie(reciever);
+        }
+    }
+
+    /***** Public Methods ******/
+
+    function tokenURI(uint256 tokenId)
+        public view override returns (string memory) {
+        require(_exists(tokenId), "nonexistent token");
+        return (string(abi.encodePacked(_baseURIvalue, diceLib.getTokenURIpath(tokenId))));
     }
 
     function getMintingCost(uint8 number) public view returns (uint256 cost) {
@@ -61,95 +142,6 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return cost;
     }
 
-    function addAdjectives(string[] memory adjectives) public onlyOwner {
-        for (uint i=0; i<adjectives.length; i++) {
-            nameLib.addAdjective(adjectives[i]);
-        }
-    }
-
-    function addNouns(string[] memory nouns) public onlyOwner {
-        for (uint i=0; i<nouns.length; i++) {
-            nameLib.addNoun(nouns[i]);
-        }
-    }
-
-    function setBaseURI(string calldata baseURI) public onlyOwner {
-        _baseURIvalue = baseURI;
-    }
-
-    function _baseURI() internal view override returns (string memory) {
-        return _baseURIvalue;
-    }
-
-    function tokenURI(uint256 tokenId)
-        public view override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
-        return (string(abi.encodePacked(_baseURI(), diceLib.getTokenURIpath(tokenId))));
-    }
-
-    function _mintDie(
-        string memory name,
-        uint8 sides,
-        uint8 styleId,
-        uint8 font,
-        address reciever
-    ) private returns (uint256 tokenId) {
-        // TODO: require valid sides, font & style
-
-        tokenId = _tokenIds.current();
-        diceLib.createDice(tokenId, name, sides, styleId, font);
-        //safe mint will emit a transfer event
-        _safeMint(reciever, tokenId);
-        _tokenIds.increment();
-        //is this already implied? can it be dropped?
-        return tokenId;
-    }
-
-    function _mintRandomDie(address reciever) private returns (uint256 tokenId) {
-        uint256 nonce = _tokenIds.current();
-        string memory randomName = nameLib.getRandomName(nonce);
-        uint8 sides = DiceLibrary.randomSides(uint16(nonce));
-        uint8 styleId = DiceLibrary.randomStyle(uint16(nonce * sides));
-        uint8 font = DiceLibrary.randomFont(uint16(nonce * styleId));
-        return _mintDie(
-            randomName,
-            sides,
-            styleId,
-            font,
-            reciever
-        );
-    }
-
-    function mintDie(
-        string memory name,
-        uint8 sides,
-        uint8 styleId,
-        uint8 font,
-        address reciever
-    ) public onlyOwner returns (uint256 tokenId) {
-        return _mintDie(name, sides, styleId, font, reciever);
-    }
-
-/*
-    function mintRandomDie() public onlyOwner returns (uint256 tokenId) {
-        return mintRandomDie(msg.sender);
-    }
-*/
-    function mintRandomDie(address reciever) public onlyOwner returns (uint256 tokenId) {
-        return _mintRandomDie(reciever);
-    }
-
-    function buyRandomDice() public payable returns (uint256 count) {
-        require((msg.value >= getMintingCost(1)), "not enough cash");
-        //funds sent above price are treated as a donation
-        count = uint256(msg.value / pricePerDie) % (maxDicePerTransaction + 1);
-        for(uint i=0; i < count; i++) {
-            _mintRandomDie(msg.sender);
-        }
-        (bool success,) = accountsRecievable.call{value: msg.value}("");
-        require(success, "Failed to forward payment.");
-    }
-
     function getOwnedTokenIds() public view returns (uint256[] memory) {
         uint256 ownedCnt = balanceOf(msg.sender);
         uint256[] memory tokenIds = new uint256[](ownedCnt);
@@ -157,6 +149,11 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
             tokenIds[i] = tokenOfOwnerByIndex(msg.sender, i);
         }
         return tokenIds;
+    }
+
+    function getRoll(uint256 tokenId, uint16 nonce) public view returns (uint8) {
+        require(msg.sender == ownerOf(tokenId), "Not yours.");
+        return diceLib.doRoll(tokenId, nonce);
     }
 
     function getTraits(uint256 tokenId)
@@ -171,19 +168,14 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return diceLib.getTraits(tokenId);
     }
 
-    function roll(uint256 tokenId, uint16 nonce) public view returns (uint8) {
-        // FIXME:
-        // require(msg.sender == ownerOf(tokenId), "Ah Ah Ah, you didn't say the magic word! (This isn't your NFT.)");
-        return diceLib.doRoll(tokenId, nonce);
-    }
-
-    function getColorTheme(uint8 styleId) public pure
-        returns (string memory foreground, string memory background)
-    {
-        return DiceLibrary.getColorTheme(styleId);
-    }
-
-    function getOwnerOf(uint256 tokenId) public view returns (address) {
-        return ownerOf(tokenId);
+    function buyRandomDice() public payable returns (uint256 count) {
+        require((msg.value >= getMintingCost(1)), "not enough cash");
+        //funds sent above price are treated as a donation
+        count = uint256(msg.value / pricePerDie) % (maxDicePerTransaction + 1);
+        for(uint i=0; i < count; i++) {
+            _mintRandomDie(msg.sender);
+        }
+        (bool success,) = accountsRecievable.call{value: msg.value}("");
+        require(success, "Failed to forward payment.");
     }
 }

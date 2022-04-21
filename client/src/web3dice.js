@@ -109,15 +109,15 @@ export const web3dice = {
 
   async delayedRoll(diceId) {
     let rollDelay = Math.floor(Math.random() * 20)
-    setTimeout(() => {this.roll(diceId)}, rollDelay)
+    setTimeout(() => {this.getRoll(diceId)}, rollDelay)
   },
 
-  async roll(diceId) {
+  async getRoll(diceId) {
     let nftId = store.ownedDice[diceId]
     store.isRolling[diceId] = true
     try {
       const nonce = parseInt(new Date().getTime() % 512);
-      const roll = await this.diceContract.roll(nftId, nonce)
+      const roll = await this.diceContract.getRoll(nftId, nonce)
       store.lastRoll[diceId] = roll
       setTimeout(() => {
         store.isRolling[diceId] = false

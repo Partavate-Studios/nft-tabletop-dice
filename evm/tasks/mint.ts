@@ -8,7 +8,7 @@ import { getContract } from "../lib/contract";
 task("mint-die", "Mint Dice NFTs")
   .addParam("owner", "Who will own the NFT", env("ETH_PUBLIC_KEY"), types.string)
   .addParam("name", "The Name of the Die NFT", "🎲", types.string)
-  .addParam("sides", "The Number of Faces", 10, types.int)
+  .addParam("sides", "The Number of Faces", 20, types.int)
   .addParam("styleId", "The Style Number (0-30)", 0, types.int)
   .addParam("font", "The Font Id", 1, types.int)
   .setAction(async (taskArgs, hre) => {

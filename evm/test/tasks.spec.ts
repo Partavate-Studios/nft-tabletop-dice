@@ -33,7 +33,7 @@ describe("tasks", () => {
 
       await run("mint-die", {
           name: "Le 🎲",
-          sides: 10,
+          sides: 20,
           fgColor: "fffff",
           bgColor: "00134e",
           font: 1,
