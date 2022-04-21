@@ -23,6 +23,18 @@ Works best in metamask.
 
 [![Watch on YouTube](https://img.youtube.com/vi/SUipc_FUhSE/0.jpg)](https://www.youtube.com/watch?v=SUipc_FUhSE)
 
+
+## Contract Deployment
+
+Note that `hh` is an alias to `npx hardhat`. Use it for great good!
+
+```
+hh deploy --network mumbai
+hh verify-published --network mumbai
+```
+
+This will update `evm/addresses/published-addresses.json`, allowing client builds (`docker build`) to reference the correct contract version.
+
 ## Production Deployment
 
 This deploys changes to the **client only**. Contract changes must be deployed to their chains using Hardhat.
@@ -50,6 +62,13 @@ export KUBECONFIG=$HOME/.kube/linode
 ```
 kubectl apply -f deployment/polydice-deployment.yaml
 ```
+
+If the value of `image:` did not change in `/polydice-deployment.yaml`, you'll need to redeploy simply by restarting the container:
+
+```
+kubectl rollout restart  deployment/polydice-client -n partavate-websites
+```
+
 
 ## Initial Kubernetes Setup:
 
