@@ -10,7 +10,6 @@ library DiceLibrary {
         uint8 sides;
         uint8 styleId; // TODO: colorthemeid?
         uint8 font;
-        bool zeroBased;
     }
 
     struct DiceStorage {
@@ -27,13 +26,11 @@ library DiceLibrary {
     ) internal {
         require(sides > 0, "Sides must be non-zero");
 
-        bool zeroBased = (sides == 10) ? true : false; // Only D10s have "0"
         self.dice[tokenId] = Dice(
             name,
             sides,
             styleId,
-            font,
-            zeroBased
+            font
         );
     }
 
@@ -112,8 +109,7 @@ library DiceLibrary {
         uint256 tokenId,
         uint16 nonce
     ) internal view returns (uint8) {
-        // TODO: Is there a better/cheaper way to do !(bool) -> int
-        uint8 offset = (self.dice[tokenId].zeroBased) ? 0 : 1;
+        uint8 offset = (self.dice[tokenId].sides == 10) ? 0 : 1;
         uint8 result = uint8(
             (random(nonce) % self.dice[tokenId].sides) + offset
         );
