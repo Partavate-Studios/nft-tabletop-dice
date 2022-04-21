@@ -1,11 +1,15 @@
 import sinon from "sinon";
 import chai from "chai";
 import sinonChai from "sinon-chai";
-import { ethers as hardhatEthers, waffle } from "hardhat";
-import { Contract, Wallet } from "ethers";
+import chaiAsPromised from "chai-as-promised";
+import { ethers as hardhatEthers } from "hardhat";
+import { Contract, Transaction, providers, utils } from "ethers";
 import type { FactoryOptions } from "@nomiclabs/hardhat-ethers/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { waffleChai } from "./waffle-bits/waffle-chai";
 
+chai.use(chaiAsPromised);
+chai.use(waffleChai);
 chai.use(sinonChai);
 
 afterEach(() => {
@@ -25,5 +29,4 @@ export async function deployContract(name: string): Promise<Contract> {
 
 export async function getTestWallet(): Promise<SignerWithAddress> {
   return (await hardhatEthers.getSigners())[0];
-  //return waffle.provider.getWallets()[0];
 }

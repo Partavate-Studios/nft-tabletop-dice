@@ -38,11 +38,17 @@ docker push registry.gitlab.com/partavate/nft-dice-roller/client:0.2
 
 ### Update the Kubernetes Deployment
 
+Load the KUBECONFIG env, pointing the LKE cluster.
+
+```
+export KUBECONFIG=$HOME/.kube/linode
+```
+
 1. Update the image tag in `deployment/polydice-deployment.yaml`
 2. Publish the updated deployment:
  
 ```
-kubectl -f deployment/polydice-deployment.yaml
+kubectl apply -f deployment/polydice-deployment.yaml
 ```
 
 ## Initial Kubernetes Setup:

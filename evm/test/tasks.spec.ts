@@ -1,5 +1,5 @@
 import { deployContract, getTestWallet } from "./test-helpers";
-import { waffle, run } from "hardhat";
+import { run } from "hardhat";
 import { expect } from "chai";
 import sinon from "sinon";
 
