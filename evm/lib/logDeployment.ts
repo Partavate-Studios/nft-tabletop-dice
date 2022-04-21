@@ -1,9 +1,16 @@
 import * as fs from "fs"
 
+const HARDHAT_TEST_CHAINID = 31337;
+
 export function logDeployment(chainId: number, address: string) {
   const addressDirectory = 'addresses'
   const addressFile = 'published-addresses.json'
   let filePath = addressDirectory + '/' + addressFile
+
+  // Don't modify when Hardhat tests are ran
+  if (chainId == HARDHAT_TEST_CHAINID) {
+    return;
+  }
 
   //ensure the directory exists
   if (!fs.existsSync(addressDirectory)){
