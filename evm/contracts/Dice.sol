@@ -17,8 +17,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     using DiceLibrary for DiceLibrary.DiceStorage;
     using RandomNameLibrary for RandomNameLibrary.WordStorage;
 
-    uint256 pricePerDie = 0.001 ether;
-    uint256 constant maxDicePerTransaction = 3;
+    uint256 pricePerDie = 0.173 ether;
+    uint256 constant maxDicePerTransaction = 5;
     address payable accountsRecievable;
 
     Counters.Counter private _tokenIds;
@@ -32,7 +32,6 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         _baseURIvalue = "https://dice.partavate.com";
         accountsRecievable = payable(msg.sender);
         addWords(adjectives, nouns);
-        pricePerDie = 0.001 ether;
         diceLib.possibleSides.push(6);
         diceLib.possibleSides.push(20);
         diceLib.maxThemeValue = 30;
@@ -131,15 +130,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return (string(abi.encodePacked(_baseURIvalue, diceLib.getTokenURIpath(tokenId))));
     }
 
-    function getMintingCost(uint8 number) public view returns (uint256 cost) {
-        require (number >= 1, "Not enough dice.");
-        require (number <= maxDicePerTransaction, "Too many dice.");
-        cost = 0;
-        for (uint i=0; i<number; i++) {
-            //the more you buy, the more you save
-            cost = cost + pricePerDie / i;
-        }
-        return cost;
+    function getMintingCost(uint8 qty) public view returns (uint256 cost) {
+        return pricePerDie * qty;
     }
 
     function getOwnedTokenIds() public view returns (uint256[] memory) {
@@ -168,10 +160,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return diceLib.getTraits(tokenId);
     }
 
-    function buyRandomDice() public payable returns (uint256 count) {
-        require((msg.value >= getMintingCost(1)), "not enough cash");
-        //funds sent above price are treated as a donation
-        count = uint256(msg.value / pricePerDie) % (maxDicePerTransaction + 1);
+    function buyRandomDice(uint8 count) public payable {
+        require((msg.value >= getMintingCost(count)), "not enough cash");
         for(uint i=0; i < count; i++) {
             _mintRandomDie(msg.sender);
         }

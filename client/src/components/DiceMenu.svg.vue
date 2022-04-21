@@ -35,6 +35,9 @@ export default {
     close() {
       this.$emit('close')
     },
+    openBuyDice() {
+      this.$emit('buydice')
+    },
     add(id) {
       for(let i=0;i<3;i++) {
         if (store.selectedDice[i] == this.ownedDiceIndex) {
@@ -62,7 +65,7 @@ export default {
       }
     },
     async mintRandomDice() {
-      const dice = await web3dice.mintRandomDice()
+      const dice = await web3dice.buyRandomDice(20)
       if (dice) {
         alert('New Dice!')
       }
@@ -180,7 +183,7 @@ export default {
 
     <g transform="translate(0 -250)" v-if="haveDice">
 
-      <g stroke-width="4" stroke="#ffffff" transform="translate(0 80)">
+      <g stroke-width="4" stroke="#ffffff" transform="translate(0 100)">
         <g v-for="(id, n) in store.ownedDice" :key="'k' + id + n">
           <g :transform="'translate('+ ((n * 20) - (ownedDiceIndex * 20)) +' 0)'" class="smoothmove">
             <die
@@ -196,23 +199,26 @@ export default {
         </g>
       </g>
 
-      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -60)">
+      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -100)">
         <text transform="translate(0 0)" font-size="1.2em" fill="#aaaaaa">{{ store.diceTraits[ownedDiceIndex].name }}</text>
       </g>
-      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -30)">
+      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -65)">
         <text transform="translate(0 0)" font-size="0.5em" fill="#ffffff">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
       </g>
 
-      <g transform="translate(0 140)">
+      <g transform="translate(0 145)">
+        <text font-size="0.5em" fill="#cccccc">{{ ownedDiceIndex }} of {{ store.ownedDice.length }}</text>
+      </g>
+      <g transform="translate(0 130)">
         <text font-size="0.5em" fill="#cccccc">Die #{{ store.ownedDice[ownedDiceIndex] }}</text>
       </g>
 
-      <g stroke-width="4" stroke="#ffffff" transform="translate(-220 -20)" v-if="isMoreLeft">
+      <g stroke-width="4" stroke="#ffffff" transform="translate(-220 20)" v-if="isMoreLeft">
         <line x1="20" y1="-40" x2="-20" y2="0" />
         <line x1="20" y1="40" x2="-20" y2="0" />
         <rect x="-45" y="-55" width="90" height="110" fill="#000000" fill-opacity="0" stroke-width="0" class="can-click" @click="goLeft()" />
       </g>
-      <g stroke-width="4" stroke="#ffffff" transform="translate(220 -20)" v-if="isMoreRight">
+      <g stroke-width="4" stroke="#ffffff" transform="translate(220 20)" v-if="isMoreRight">
         <line x1="-20" y1="-40" x2="20" y2="0" />
         <line x1="-20" y1="40" x2="20" y2="0" />
         <rect x="-45" y="-55" width="90" height="110" fill="#000000" fill-opacity="0" stroke-width="0" class="can-click" @click="goRight()" />
@@ -220,7 +226,12 @@ export default {
 
     </g>
     <g transform="translate(0 -150)" v-else>
-      <text>You have no dice.</text>
+      <text>You don't have any dice yet.</text>
+      <g transform="translate(0 100)">
+        <rect x="-180" y="-40" width="360" height="80" fill="#008800" fill-opacity="0.5" stroke="#ffff00" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
+        <text font-size="0.6em">Mint Yourself Some New Dice!</text>
+        <rect x="-180" y="-40" width="360" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="openBuyDice" class="can-click" />
+      </g>
     </g>
 
     <g v-if="isSelected" transform="translate(0 0)"
@@ -229,13 +240,13 @@ export default {
       stroke-linecap="round"
       stroke-opacity="0.4">
       <g v-if="store.selectedDice[0] == ownedDiceIndex">
-        <line x1="-26" y1="-44" x2="-126" y2="56"/>
+        <line x1="-26" y1="-24" x2="-126" y2="56"/>
       </g>
       <g v-if="store.selectedDice[1] == ownedDiceIndex">
-        <line x1="0" y1="-42" x2="0" y2="55"/>
+        <line x1="0" y1="-22" x2="0" y2="55"/>
       </g>
       <g v-if="store.selectedDice[2] == ownedDiceIndex">
-        <line x1="26" y1="-44" x2="126" y2="56"/>
+        <line x1="26" y1="-24" x2="126" y2="56"/>
       </g>
     </g>
 
@@ -267,26 +278,21 @@ export default {
     </g>
 
     <g transform="translate(0 350)">
-      <g transform="translate(-200 0)">
-        <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Shop For Dice</text>
-        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="shop" class="can-click" />
+      <g transform="translate(200 20)">
+        <rect x="-80" y="-40" width="160" height="80" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
+        <text font-size="0.6em">Mint New Dice</text>
+        <rect x="-80" y="-40" width="160" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="openBuyDice" class="can-click" />
       </g>
       <g transform="translate(-200 50)">
         <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Mint 1 Die</text>
-        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="mintRandomDie" class="can-click" />
+        <text font-size="0.6em">Browse Dice</text>
+        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="shop" class="can-click" />
       </g>
 
-      <g transform="translate(200 0)">
+      <g transform="translate(-200 0)">
         <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
         <text font-size="0.6em">View Contract</text>
         <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="explorer" class="can-click" />
-      </g>
-      <g transform="translate(200 50)">
-        <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Buy In Bulk</text>
-        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="mintRandomDice" class="can-click" />
       </g>
 
       <g transform="translate(0 20)">

@@ -131,18 +131,38 @@ export const web3dice = {
     }
   },
 
-  async mintRandomDice() {
-    let price = 1000000000000000
-    let qty = 20
-    let value = String(price * qty)
+  async getPriceForDice(qty) {
     try {
-      let minted = await this.diceContract.mintRandomDice({value: value})
-      console.log('Minted new dice: ', minted)
+      let price = await this.diceContract.getMintingCost(qty)
+      return price
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+    return 0
+  },
+
+  async buyRandomDice(qty) {
+    let value = this.getPriceForDice(qty)
+    try {
+      const transaction = await this.diceContract.buyRandomDice(qty, {value: value})
+      this.watchTransaction(transaction)
+      console.log(transaction)
+      console.log('Minted new dice: ', qty)
       return true
     } catch (error) {
       console.log("Error: ", error)
     }
     return false
+  },
+
+  async watchTransaction(transaction) {
+    const receipt = await transaction.wait()
+    this.getOwnedDice()
+    if (receipt) {
+      alert ("You have new dice!")
+    } else {
+      alert ("We regret to inform you that your dice purchase request failed.")
+    }
   },
 
   async mintRandomDie() {

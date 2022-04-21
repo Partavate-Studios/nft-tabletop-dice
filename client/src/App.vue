@@ -6,6 +6,7 @@ import PolydiceIcon from './components/polydice-icon.svg.vue'
 import PolygonLogo from './components/_polygon-logo.svg.vue'
 import Die from './components/_die.svg.vue'
 import DiceMenu from './components/DiceMenu.svg.vue'
+import BuyDice from './components/BuyDicePopup.svg.vue'
 import { web3dice } from './web3dice.js'
 
 </script>
@@ -17,7 +18,8 @@ export default {
   data() {
     return {
       store,
-      menu: false
+      menu: false,
+      buyDice: false
     }
   },
   computed: {
@@ -50,6 +52,15 @@ export default {
     },
     closeMenu() {
       this.menu = false
+      this.buyDice = false
+    },
+    openBuyDice() {
+      this.menu = false
+      this.buyDice = true
+    },
+    closeBuyDice() {
+      this.menu = true
+      this.buyDice = false
     },
     async roll() {
       if (!this.diceSelected) {
@@ -114,7 +125,6 @@ export default {
           </g>
 
 
-          <dice-menu :show="menu" />
 
           <g transform="translate(0 120)">
             <die
@@ -136,8 +146,9 @@ export default {
             <text v-if="!diceSelected">Select Dice</text>
             <rect x="-300" y="-100" width="600" height="200" fill="#000000" stroke="#ffffff" stroke-opacity="0.0" fill-opacity="0.0" class="can-click" @click="roll()" />
           </g>
-          <rect v-if="menu" x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="closeMenu" />
-          <dice-menu :show="menu" @close="closeMenu()" />
+          <rect v-if="menu || buyDice" x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="(buyDice) ? closeBuyDice() : closeMenu()" />
+          <dice-menu :show="menu" @close="closeMenu()" @buydice="openBuyDice()" />
+          <buy-dice :show="buyDice" @close="closeBuyDice()" />
         </g>
       </g>
     </svg-container>

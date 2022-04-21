@@ -157,7 +157,7 @@ export default {
 
 .floating {
   transition: 0.1s linear;
-  transform: translate(0,-250px) scale(2);
+  transform: translate(0,-320px) scale(2);
 }
 .floatshadow {
   transition: 0.1s linear;
