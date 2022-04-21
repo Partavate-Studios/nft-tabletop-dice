@@ -25,9 +25,12 @@ Works best in metamask.
 
 ## Production Deployment
 
-Build the Docker image
+This deploys changes to the **client only**. Contract changes must be deployed to their chains using Hardhat.
+
+Build the Docker image, from inside `./client`
 
 ```
+cd client
 docker login registry.gitlab.com
 docker build -t registry.gitlab.com/partavate/nft-dice-roller/client:0.2 .
 docker push registry.gitlab.com/partavate/nft-dice-roller/client:0.2

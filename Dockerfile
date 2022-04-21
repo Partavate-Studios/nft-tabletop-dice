@@ -32,7 +32,7 @@ RUN npm config set depth 0 && \
 # Base image from https://github.com/Partavate-Studios/nginx-php-fpm
 FROM registry.gitlab.com/partavate/infrastructure/nginx-php-fpm:php81
 
-COPY ./web2-metadata/nginx.conf /etc/nginx/conf.d/polydice.conf
+COPY ./deployment/nginx.conf /etc/nginx/conf.d/polydice.conf
 RUN rm -rf /etc/nginx/conf.d/default.conf
 
 # Copy compiled PHP and Assets to the final image
