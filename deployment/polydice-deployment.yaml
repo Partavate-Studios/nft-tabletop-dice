@@ -21,6 +21,7 @@ spec:
       containers:
         - name: polydice-client
           image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2
+          imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -32,8 +33,8 @@ spec:
             timeoutSeconds: 3
           resources:
            limits:
-              memory: '32Mi'
-              cpu: '100m'
+              memory: '128Mi'
+              cpu: '200m'
           ports:
             - containerPort: 80
           # Environmental variables, overrides .env
