@@ -160,6 +160,16 @@ describe("TabletopDiceNFT", () => {
     });
   });
 
+  describe("setPrice", () => {
+    it("checks if price setting works", async () => {
+      let price = 1000;
+      let qty = 3;
+      await deployedContract.setDiePrice(price);
+      let cost = await deployedContract.getMintingCost(qty);
+      expect(cost).to.eq(price * qty);
+    });
+  });
+
   describe("Rolling Tabletop Dice", () => {
     it("Dice NFTs must roll with a result from 1-$sides", async () => {
       await mintDie();

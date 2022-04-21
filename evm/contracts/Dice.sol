@@ -131,7 +131,7 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     }
 
     function getMintingCost(uint8 qty) public view returns (uint256 cost) {
-        return pricePerDie * qty;
+        return pricePerDie * uint256(qty);
     }
 
     function getOwnedTokenIds() public view returns (uint256[] memory) {

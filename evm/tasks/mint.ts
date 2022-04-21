@@ -28,18 +28,3 @@ task("mint-die", "Mint Dice NFTs")
       });
   });
 
-
-  task("get-mint-cost", "Mint Dice NFTs")
-  .addParam("count", "The Number of Dice", 2, types.int)
-  .setAction(async (taskArgs, hre) => {
-    return getContract("TabletopDiceNFT", hre)
-      .then((contract: Contract) => {
-        return contract.getMintingCost(
-          taskArgs.count,
-          { gasLimit: 500_000 }
-        );
-      })
-      .then((tr: TransactionResponse) => {
-        process.stdout.write(`TX hash: ${tr.hash}\n`);
-      });
-  });
