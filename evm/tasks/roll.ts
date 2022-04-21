@@ -1,7 +1,5 @@
 import { task, types } from "hardhat/config";
 import { Contract } from "ethers";
-import { TransactionResponse } from "@ethersproject/abstract-provider";
-import { env } from "../lib/env";
 import { getContract } from "../lib/contract";
 
 task("roll", "Roll a die that I own")
