@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polydice-client
+  namespace: partavate-websites
+  labels:
+    app: polydice-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: polydice-client
+  template:
+    metadata:
+      labels:
+        app: polydice-client
+    spec:
+      imagePullSecrets:
+        - name: partavate-gitlab-registry
+      containers:
+        - name: polydice-client
+          image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /nginx-health
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+           limits:
+              memory: '64Mi'
+              cpu: '100m'
+          ports:
+            - containerPort: 80
+          # Environmental variables, overrides .env
+          env: []
