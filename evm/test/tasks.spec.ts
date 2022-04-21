@@ -20,7 +20,7 @@ describe("tasks", () => {
     });
   });
 
-  describe("mint-nft", () => {
+  describe("mint-die", () => {
     beforeEach(async () => {
       const deployedContract = await deployContract("TabletopDiceNFT");
 
@@ -31,13 +31,13 @@ describe("tasks", () => {
       const wallet = await getTestWallet();
       sinon.stub(process.stdout, "write");
 
-      await run("mint-nft", {
-          owner: wallet.address,
+      await run("mint-die", {
           name: "Le 🎲",
-          sides: 10,
+          sides: 20,
           fgColor: "fffff",
           bgColor: "00134e",
-          font: 1
+          font: 1,
+          owner: wallet.address,
         });
 
       // 3 Tx, each with logged messages (REMOVING console.log will break this!)

@@ -3,5 +3,5 @@
 pragma solidity ^0.8.0;
 
 contract Version {
-    string version = "0.1";
+    string version = "0.2";
 }

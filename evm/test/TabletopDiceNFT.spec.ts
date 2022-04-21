@@ -23,50 +23,59 @@ describe("TabletopDiceNFT", () => {
     deployedContract = await deployContract("TabletopDiceNFT");
   });
 
-  async function mintNftDefault(): Promise<TransactionResponse> {
-    return deployedContract.mintNFT(
-      wallet.address,
-      name,
-      sides,
-      styleId,
-      font
-    );
-  }
-
-  async function mintNftBatch(count: number, owner=wallet.address): Promise<TransactionResponse> {
-    return deployedContract.mintNFTBatch(
-      owner,
+  async function mintDie(owner=wallet.address) {
+    let tokenId = await deployedContract.mintDie(
       name,
       sides,
       styleId,
       font,
-      count
+      owner
+    );
+    return tokenId;
+  }
+
+  async function mintRandomDie(owner=wallet.address) {
+    let tokenId = await deployedContract.mintRandomDie(
+      owner
+    );
+    return tokenId;
+  }
+  async function mintRandomDice(count: number, owner=wallet.address) {
+    await deployedContract.mintRandomDice(
+      count,
+      owner
     );
   }
 
-  describe("mintNft", async () => {
+  async function mintNftBatch(count: number, owner=wallet.address) {
+    for (var i=0;i<count;i++) {
+      await mintDie(owner);
+    }
+  }
+
+  describe("mintDice", async () => {
     it("emits the Transfer event", async () => {
-      await expect(mintNftDefault())
+      await expect(mintDie())
         .to.emit(deployedContract, "Transfer")
         .withArgs(ethers.constants.AddressZero, wallet.address, "0");
     });
 
     it("returns the new item ID", async () => {
-      await expect(
-        await deployedContract.callStatic.mintNFT(
-          wallet.address,
+      expect(
+        await deployedContract.callStatic.mintDie(
           name,
           sides,
           styleId,
-          font)
-      ).to.eq(0);
+          font,
+          wallet.address)
+      ).to.eq("0");
     });
 
     it("increments the item ID", async () => {
       const STARTING_NEW_ITEM_ID = "0";
       const NEXT_NEW_ITEM_ID = "1";
 
-      await expect(mintNftDefault())
+      await expect(mintDie())
         .to.emit(deployedContract, "Transfer")
         .withArgs(
           ethers.constants.AddressZero,
@@ -74,7 +83,7 @@ describe("TabletopDiceNFT", () => {
           STARTING_NEW_ITEM_ID
         );
 
-      await expect(mintNftDefault())
+      await expect(mintDie())
         .to.emit(deployedContract, "Transfer")
         .withArgs(
           ethers.constants.AddressZero,
@@ -84,39 +93,29 @@ describe("TabletopDiceNFT", () => {
     });
 
     it("cannot mint to address zero", async () => {
-      const TX = deployedContract.mintNFT(
-        ethers.constants.AddressZero,
+      const TX = deployedContract.mintDie(
         name,
         sides,
         styleId,
-        font
+        font,
+        ethers.constants.AddressZero
       );
       await expect(TX).to.be.rejectedWith(Error, 'ERC721: mint to the zero address');
     });
 
-    it("translates styleId to color themes", async () => {
-      let key = 0;
-      let theme = await deployedContract.getColorTheme(key);
-      expect(theme.foreground).to.equal('0000ff');
-      expect(theme.background).to.equal('00134e');
-      key = 30;
-      theme = await deployedContract.getColorTheme(key);
-      expect(theme.foreground).to.equal('ffffff');
-      expect(theme.background).to.equal('0000ff');
-    });
-
     it("Mints dice NFTs with attributes", async () => {
       let name = "der Würfel!";
-      let sides = 10;
-      let font = 14;
+      let sides = 20;
+      let font = 1;
       let tokenURIexpected =
         `https://dice.partavate.com/metadata/${name}/${sides}/${fgColor}/${bgColor}/${font}`;
 
-      await deployedContract.mintNFT(wallet.address,
+      await deployedContract.mintDie(
         name,
         sides,
         styleId,
-        font);
+        font,
+        wallet.address);
 
       // TODO: Get tokenId from emitted event:
       const tokenId = 0;
@@ -127,19 +126,21 @@ describe("TabletopDiceNFT", () => {
       expect(die.bgColor).to.equal("555753");
       expect(die.font).to.equal(font);
 
-      //console.log(await deployedContract.tokenURI(tokenId));
       expect(await deployedContract.tokenURI(tokenId)).to.equal(tokenURIexpected);
     });
   });
 
   describe("Minting a random die", async () => {
     it("creates a random die", async () => {
-      let tokenId = await deployedContract.mintRandomDie();
-      console.log('address', wallet.address);
-      //expect(tokenId).to.eq("0");
+      await mintRandomDie();
 
       let nftBalance = await deployedContract.balanceOf(wallet.address);
       expect(nftBalance).to.eq(1);
+
+
+      await mintRandomDice(5);
+      nftBalance = await deployedContract.balanceOf(wallet.address);
+      expect(nftBalance).to.eq(6);
 
       let die = await deployedContract.getTraits(0);
       expect(die.name).to.equal("Benny Hicks");
@@ -159,26 +160,36 @@ describe("TabletopDiceNFT", () => {
     });
   });
 
+  describe("setPrice", () => {
+    it("checks if price setting works", async () => {
+      let price = 1000;
+      let qty = 3;
+      await deployedContract.setDiePrice(price);
+      let cost = await deployedContract.getMintingCost(qty);
+      expect(cost).to.eq(price * qty);
+    });
+  });
+
   describe("Rolling Tabletop Dice", () => {
     it("Dice NFTs must roll with a result from 1-$sides", async () => {
-      await mintNftDefault();
+      await mintDie();
 
       let tokenId = 0;
       let numRolls = 10;
       for (let index = 0; index < numRolls; ++index) {
         await ethers.provider.send('evm_mine', []); // Advance block number
-        expect(await deployedContract.roll(tokenId, nonceFn()))
+        expect(await deployedContract.getRoll(tokenId, nonceFn()))
           .to.be.within(1, sides, "Die result is out of allowed range!")
       }
 
       it("10-side dice NFTs must roll with a result from 0-9", async () => {1
-        await deployedContract.mintNFT(wallet.address, "D10", 10, styleId, font);
+        await deployedContract.mintDie("D10", 10, styleId, font, wallet.address);
 
         let tokenId = 0;
         let numRolls = 10;
         for (let index = 0; index < numRolls; ++index) {
           await ethers.provider.send('evm_mine', []); // Advance block number
-          expect(await deployedContract.roll(tokenId, nonceFn()))
+          expect(await deployedContract.getRoll(tokenId, nonceFn()))
             .to.be.within(0, sides, "Die result is out of allowed range!")
         }
       });

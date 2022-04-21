@@ -10,7 +10,7 @@ task("roll", "Roll a die that I own")
 
     return getContract("TabletopDiceNFT", hre)
       .then((contract: Contract) => {
-        const result = contract.roll(taskArgs.tokenid, taskArgs.nonce);
+        const result = contract.getRoll(taskArgs.tokenid, taskArgs.nonce);
         return result;
       })
       .then((result: number) => {

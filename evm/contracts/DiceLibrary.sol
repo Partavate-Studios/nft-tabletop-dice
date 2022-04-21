@@ -8,13 +8,25 @@ library DiceLibrary {
     struct Dice {
         string name;
         uint8 sides;
-        uint8 styleId;
+        uint8 colorTheme;
         uint8 font;
-        bool zeroBased;
     }
 
     struct DiceStorage {
         mapping(uint256 => Dice) dice;
+
+        uint8[] possibleSides;
+        uint8 maxThemeValue;
+        uint8 maxFontValue;
+    }
+
+    function inSides(DiceStorage storage self, uint8 sides) internal view returns (bool) {
+        for (uint256 i = 0; i < self.possibleSides.length; i++) {
+            if (self.possibleSides[i] == sides) {
+                return true;
+            }
+        }
+        return false;
     }
 
     function createDice(
@@ -22,18 +34,18 @@ library DiceLibrary {
         uint256 tokenId,
         string memory name,
         uint8 sides,
-        uint8 styleId,
+        uint8 colorTheme,
         uint8 font
     ) internal {
-        require(sides > 0, "Sides must be non-zero");
+        require(colorTheme <= self.maxThemeValue, "Invalid color theme");
+        require(font <= self.maxFontValue, "Invalid color theme");
+        require(inSides(self, sides), "Invalid number of sides");
 
-        bool zeroBased = (sides == 10) ? true : false; // Only D10s have "0"
         self.dice[tokenId] = Dice(
             name,
             sides,
-            styleId,
-            font,
-            zeroBased
+            colorTheme,
+            font
         );
     }
 
@@ -43,7 +55,7 @@ library DiceLibrary {
         view
         returns (string memory)
     {
-        (string memory _fgColor, string memory _bgColor) = getColorTheme(self.dice[tokenId].styleId);
+        (string memory _fgColor, string memory _bgColor) = getColorTheme(self.dice[tokenId].colorTheme);
 
         return(string(abi.encodePacked(
             "/metadata",
@@ -66,7 +78,7 @@ library DiceLibrary {
             uint8 font
         )
     {
-        (string memory _fgColor, string memory _bgColor) = getColorTheme(self.dice[tokenId].styleId);
+        (string memory _fgColor, string memory _bgColor) = getColorTheme(self.dice[tokenId].colorTheme);
 
         return (
             self.dice[tokenId].name,
@@ -77,7 +89,7 @@ library DiceLibrary {
         );
     }
 
-    function random(uint16 nonce) private view returns (uint256) {
+    function random(uint16 nonce) internal view returns (uint256) {
         return
             uint256(
                 keccak256(
@@ -91,20 +103,11 @@ library DiceLibrary {
             );
     }
 
-    function randomStyle(uint16 nonce) internal view returns (uint8) {
-        uint8 maxStyle = 30;
-        uint8 randomStyleId = (uint8(random(nonce)) % (maxStyle + 1));
-        return randomStyleId;
-    }
-    function randomSides(uint16 nonce) internal view returns (uint8) {
-        uint8[2] memory sides = [6, 20];
-        uint8 randomStyleId = (uint8(random(nonce)) % 2);
-        return sides[randomStyleId];
-    }
-    function randomFont(uint16 nonce) internal view returns (uint8) {
-        uint8 maxFonts = 1;
-        uint8 randomFontId = (uint8(random(nonce)) % (maxFonts + 1));
-        return randomFontId;
+    function getRandomAttributes(DiceStorage storage self, uint16 nonce) internal view returns (uint8 sides, uint8 colorTheme, uint8 font) {
+        sides = self.possibleSides[(uint8(random(nonce)) % self.possibleSides.length)];
+        colorTheme = (uint8(random(nonce * sides)) % (self.maxThemeValue + 1));
+        font = (uint8(random(nonce * colorTheme)) % (self.maxFontValue + 1));
+        return (sides, colorTheme, font);
     }
 
     function doRoll(
@@ -112,8 +115,7 @@ library DiceLibrary {
         uint256 tokenId,
         uint16 nonce
     ) internal view returns (uint8) {
-        // TODO: Is there a better/cheaper way to do !(bool) -> int
-        uint8 offset = (self.dice[tokenId].zeroBased) ? 0 : 1;
+        uint8 offset = (self.dice[tokenId].sides == 10) ? 0 : 1;
         uint8 result = uint8(
             (random(nonce) % self.dice[tokenId].sides) + offset
         );
@@ -121,79 +123,79 @@ library DiceLibrary {
     }
 
     // Storing small indexed values allows much less data per minted token
-    function getColorTheme(uint8 styleId) internal pure returns(
+    function getColorTheme(uint8 colorTheme) internal pure returns(
         string memory foreground, string memory background
     ) {
-        require(styleId <= 30, "style out of range");
+        require(colorTheme <= 30, "style out of range");
 
-        if ((styleId >= 0) && (styleId <= 3)) {
+        if ((colorTheme >= 0) && (colorTheme <= 3)) {
             background = '00134e';
-        } else if ((styleId >= 4) && (styleId <= 7)) {
+        } else if ((colorTheme >= 4) && (colorTheme <= 7)) {
             background = '1a1a1a';
-        } else if ((styleId >= 8) && (styleId <= 10)) {
+        } else if ((colorTheme >= 8) && (colorTheme <= 10)) {
             background = 'ffffff';
-        } else if ((styleId >= 11) && (styleId <= 13)) {
+        } else if ((colorTheme >= 11) && (colorTheme <= 13)) {
             background = '555753';
-        } else if ((styleId >= 14) && (styleId <= 16)) {
+        } else if ((colorTheme >= 14) && (colorTheme <= 16)) {
             background = '8b10d0';
-        } else if ((styleId >= 17) && (styleId <= 19)) {
+        } else if ((colorTheme >= 17) && (colorTheme <= 19)) {
             background = 'ecdc19';
-        } else if ((styleId == 20) || (styleId == 21)) {
+        } else if ((colorTheme == 20) || (colorTheme == 21)) {
             background = '408fdd';
-        } else if ((styleId == 22) || (styleId == 23)) {
+        } else if ((colorTheme == 22) || (colorTheme == 23)) {
             background = '317a26';
-        } else if ((styleId == 24) || (styleId == 25)) {
+        } else if ((colorTheme == 24) || (colorTheme == 25)) {
             background = 'f21d0a';
-        } else if (styleId == 26) {
+        } else if (colorTheme == 26) {
             background = '88ff44';
-        } else if (styleId == 27) {
+        } else if (colorTheme == 27) {
             background = 'd09c10';
-        } else if (styleId == 28) {
+        } else if (colorTheme == 28) {
             background = 'ef54da';
-        } else if (styleId == 29) {
+        } else if (colorTheme == 29) {
             background = '4e0000';
-        } else if (styleId == 30) {
+        } else if (colorTheme == 30) {
             background = '0000ff';
         }
 
-        if ((styleId == 0) ||
-            (styleId == 4) ||
-            (styleId == 8) ||
-            (styleId == 17) ||
-            (styleId == 26)) {
+        if ((colorTheme == 0) ||
+            (colorTheme == 4) ||
+            (colorTheme == 8) ||
+            (colorTheme == 17) ||
+            (colorTheme == 26)) {
             foreground = '0000ff';
-        } else if ((styleId == 1) ||
-            (styleId == 5)) {
+        } else if ((colorTheme == 1) ||
+            (colorTheme == 5)) {
             foreground = '00ff00';
-        } else if ((styleId == 2) ||
-            (styleId == 6) ||
-            (styleId == 10) ||
-            (styleId == 19) ||
-            (styleId == 28)) {
+        } else if ((colorTheme == 2) ||
+            (colorTheme == 6) ||
+            (colorTheme == 10) ||
+            (colorTheme == 19) ||
+            (colorTheme == 28)) {
             foreground = 'ff0000';
-        } else if ((styleId == 3) ||
-            (styleId == 7) ||
-            (styleId == 13) ||
-            (styleId == 16) ||
-            (styleId == 21) ||
-            (styleId == 23) ||
-            (styleId == 25) ||
-            (styleId == 29) ||
-            (styleId == 30)) {
+        } else if ((colorTheme == 3) ||
+            (colorTheme == 7) ||
+            (colorTheme == 13) ||
+            (colorTheme == 16) ||
+            (colorTheme == 21) ||
+            (colorTheme == 23) ||
+            (colorTheme == 25) ||
+            (colorTheme == 29) ||
+            (colorTheme == 30)) {
             foreground = 'ffffff';
-        } else if ((styleId == 9) ||
-            (styleId == 11) ||
-            (styleId == 14) ||
-            (styleId == 18) ||
-            (styleId == 20) ||
-            (styleId == 27)) {
+        } else if ((colorTheme == 9) ||
+            (colorTheme == 11) ||
+            (colorTheme == 14) ||
+            (colorTheme == 18) ||
+            (colorTheme == 20) ||
+            (colorTheme == 27)) {
             foreground = '000000';
-        }  else if ((styleId == 12) ||
-            (styleId == 22)) {
+        }  else if ((colorTheme == 12) ||
+            (colorTheme == 22)) {
             foreground = '88ff88';
-        }  else if (styleId == 15) {
+        }  else if (colorTheme == 15) {
             foreground = '66cc66';
-        }  else if (styleId == 24) {
+        }  else if (colorTheme == 24) {
             foreground = '880000';
         }
 

@@ -109,15 +109,15 @@ export const web3dice = {
 
   async delayedRoll(diceId) {
     let rollDelay = Math.floor(Math.random() * 20)
-    setTimeout(() => {this.roll(diceId)}, rollDelay)
+    setTimeout(() => {this.getRoll(diceId)}, rollDelay)
   },
 
-  async roll(diceId) {
+  async getRoll(diceId) {
     let nftId = store.ownedDice[diceId]
     store.isRolling[diceId] = true
     try {
       const nonce = parseInt(new Date().getTime() % 512);
-      const roll = await this.diceContract.roll(nftId, nonce)
+      const roll = await this.diceContract.getRoll(nftId, nonce)
       store.lastRoll[diceId] = roll
       setTimeout(() => {
         store.isRolling[diceId] = false
@@ -131,18 +131,38 @@ export const web3dice = {
     }
   },
 
-  async mintRandomDice() {
-    let price = 1000000000000000
-    let qty = 20
-    let value = String(price * qty)
+  async getPriceForDice(qty) {
     try {
-      let minted = await this.diceContract.mintRandomDice({value: value})
-      console.log('Minted new dice: ', minted)
+      let price = await this.diceContract.getMintingCost(qty)
+      return price
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+    return 0
+  },
+
+  async buyRandomDice(qty) {
+    let value = this.getPriceForDice(qty)
+    try {
+      const transaction = await this.diceContract.buyRandomDice(qty, {value: value})
+      this.watchTransaction(transaction)
+      console.log(transaction)
+      console.log('Minted new dice: ', qty)
       return true
     } catch (error) {
       console.log("Error: ", error)
     }
     return false
+  },
+
+  async watchTransaction(transaction) {
+    const receipt = await transaction.wait()
+    this.getOwnedDice()
+    if (receipt) {
+      alert ("You have new dice!")
+    } else {
+      alert ("We regret to inform you that your dice purchase request failed.")
+    }
   },
 
   async mintRandomDie() {

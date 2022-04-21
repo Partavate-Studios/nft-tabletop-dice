@@ -43,41 +43,24 @@ library RandomNameLibrary {
         WordListLibrary.list nouns;
     }
 
-    function getRandomName(
-        WordStorage storage self,
-        uint256 nonce
-    ) internal view returns (string memory name) {
-
-        name = string(abi.encodePacked(
-            getRandomAdjective(self, nonce),
-            ' ',
-            getRandomNoun(self, nonce)
-        ));
-        return name;
-    }
-
-    function getRandomAdjective(
-        WordStorage storage self,
-        uint256 nonce
-    ) internal view returns (string memory word) {
-        word = self.adjectives.getRandomWord(nonce);
-        return word;
-    }
-
     function addAdjective(WordStorage storage self, string memory word) internal {
         self.adjectives.addWord(word);
-    }
-
-    function getRandomNoun(
-        WordStorage storage self,
-        uint256 nonce
-    ) internal view returns (string memory word) {
-        word = self.nouns.getRandomWord(nonce);
-        return word;
     }
 
     function addNoun(WordStorage storage self, string memory word) internal {
         self.nouns.addWord(word);
     }
 
+    function getRandomName(
+        WordStorage storage self,
+        uint256 nonce
+    ) internal view returns (string memory name) {
+
+        name = string(abi.encodePacked(
+            self.adjectives.getRandomWord(nonce),
+            ' ',
+            self.nouns.getRandomWord(nonce)
+        ));
+        return name;
+    }
 }
