@@ -59,7 +59,7 @@ describe("TabletopDiceNFT", () => {
           sides,
           styleId,
           font)
-      ).to.be.eq(0);
+      ).to.eq(0);
     });
 
     it("increments the item ID", async () => {
@@ -74,13 +74,13 @@ describe("TabletopDiceNFT", () => {
           STARTING_NEW_ITEM_ID
         );
 
-      // await expect(mintNftDefault())
-      //   .to.emit(deployedContract, "Transfer")
-      //   .withArgs(
-      //     ethers.constants.AddressZero,
-      //     wallet.address,
-      //     NEXT_NEW_ITEM_ID
-      //   );
+      await expect(mintNftDefault())
+        .to.emit(deployedContract, "Transfer")
+        .withArgs(
+          ethers.constants.AddressZero,
+          wallet.address,
+          NEXT_NEW_ITEM_ID
+        );
     });
 
     it("cannot mint to address zero", async () => {
@@ -91,8 +91,7 @@ describe("TabletopDiceNFT", () => {
         styleId,
         font
       );
-      await expect(TX).to.be.rejectedWith(Error, 'ERC721: mint to the zero address')
-      //await expect(TX).to.be.revertedWith("ERC721: mint to the zero address");
+      await expect(TX).to.be.rejectedWith(Error, 'ERC721: mint to the zero address');
     });
 
     it("translates styleId to color themes", async () => {
