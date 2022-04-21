@@ -21,6 +21,7 @@ spec:
       containers:
         - name: polydice-client
           image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2
+          imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
             httpGet:
