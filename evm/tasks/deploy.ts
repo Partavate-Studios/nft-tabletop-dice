@@ -1,20 +1,13 @@
 import { task } from "hardhat/config"
 import { logDeployment } from "../lib/logDeployment"
+import constructorArgs from "../lib/arguments"
+// const constructorArgs = require("./arguments");
 
 task("deploy", "Deploy NFT contract").setAction(async (_, hre) => {
   const DiceFactory = await hre.ethers.getContractFactory(
     "TabletopDiceNFT"
   )
-  const dice = await DiceFactory.deploy(
-    ["Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster",
-    "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square",
-    "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
-    "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight"],
-    ["Snake", "Hicks", "Railroad", "Jack", "Benny", "Puppy", "Six", "Gear", "Hustle", "Hipster",
-    "Phoebe", "Jake", "Red", "Easy", "North", "East", "South", "West", "Fever", "Square",
-    "Holding", "Damage", "Dungeon", "Yo", "Brooklyn", "Little", "Metal", "Iron", "Ace",
-    "Bigfoot", "Down", "Up", "Rodeo", "Paladin", "Mage", "Devil", "Goddess", "Hack", "Midnight",
-    "🎲", "💥", "🦍", "🐻", "🐅", "🦂", "🐉", "🏦", "🪐", "🚀", "🏹" ])
+  const dice = await DiceFactory.deploy(...constructorArgs)
 
   await dice.deployed()
   const name = await dice.name()
