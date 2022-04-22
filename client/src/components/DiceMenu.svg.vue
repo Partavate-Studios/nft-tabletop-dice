@@ -22,6 +22,12 @@ export default {
       store
     }
   },
+  destroyed () {
+    window.removeEventListener('keyup', this.handleKeyPress)
+  },
+  created () {
+    window.addEventListener('keyup', this.handleKeyPress)
+  },
   methods: {
     // TODO: These urls need to be based on the current network id
     shop() {
@@ -48,6 +54,13 @@ export default {
     },
     remove(id) {
       store.selectedDice[id] = null
+    },
+    removeIfSelected(diceId) {
+      for(let i=0;i<3;i++) {
+        if (store.selectedDice[i] == this.ownedDiceIndex) {
+          store.selectedDice[i] = null
+        }
+      }
     },
     selectOrRemove(id) {
       let diceId = store.selectedDice[id]
@@ -122,6 +135,25 @@ export default {
         return true
       }
       return false
+    },
+    handleKeyPress (event) {
+      switch (event.key) {
+        case 'ArrowRight':
+          this.goRight()
+          break
+        case 'ArrowLeft':
+          this.goLeft()
+          break
+        case 'ArrowDown':
+          this.quickadd();
+          break
+        case 'ArrowUp':
+          this.removeIfSelected();
+          break
+        case ' ':
+          this.quickadd();
+          break
+      }
     }
   },
   computed: {
@@ -203,7 +235,7 @@ export default {
         <text transform="translate(0 0)" font-size="1.2em" fill="#aaaaaa">{{ store.diceTraits[ownedDiceIndex].name }}</text>
       </g>
       <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -65)">
-        <text transform="translate(0 0)" font-size="0.5em" fill="#ffffff">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
+        <text transform="translate(0 0)" font-size="0.6em" fill="#ffffff88">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
       </g>
 
       <g transform="translate(0 145)">
