@@ -143,7 +143,7 @@ export const web3dice = {
 
   async buyRandomDice(qty) {
     let value = this.getPriceForDice(qty)
-    let gasLimit = 200_000 * qty
+    let gasLimit = 500_000 * qty
     try {
       const transaction = await this.diceContract.buyRandomDice(
         qty, 
