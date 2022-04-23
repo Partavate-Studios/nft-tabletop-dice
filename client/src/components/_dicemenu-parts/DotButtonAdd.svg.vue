@@ -1,9 +1,8 @@
 <script>
 export default {
-  props: {
-    hover: {
-      type: Boolean,
-      default: false
+  data() {
+    return {
+      hover: false
     }
   },
   computed: {

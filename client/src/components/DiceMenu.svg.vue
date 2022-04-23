@@ -1,11 +1,11 @@
 <script setup>
 import Die from './_die.svg.vue'
-import dieBox from './_dicemenu-parts/SelectedDieBox.vue'
+import dieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
 </script>
 <script>
 import { web3dice } from '../web3dice.js'
 import { store } from '../store.js'
-import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.vue'
+import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
 
 export default {
   components: { SelectedDieBox },
@@ -138,6 +138,13 @@ export default {
     },
     handleKeyPress (event) {
       switch (event.key) {
+        case '1':
+        case '2':
+        case '3':
+          if (store.selectedDice[event.key -1] != null) {
+            this.ownedDiceIndex = store.selectedDice[event.key -1]
+          }
+          break;
         case 'ArrowRight':
           this.goRight()
           break
@@ -152,6 +159,9 @@ export default {
           break
         case ' ':
           this.quickadd();
+          break
+        case 'Escape':
+          this.close();
           break
       }
     }
