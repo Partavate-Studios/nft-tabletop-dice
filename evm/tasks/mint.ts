@@ -41,7 +41,7 @@ task("mint-die", "Mint Dice NFT")
         const transaction = await contract.mintRandomDice(
           taskArgs.count,
           taskArgs.owner,
-          { gasLimit: 100_000 * taskArgs.count }
+          { gasLimit: 500_000 * taskArgs.count }
         );
         return transaction.wait();
       })
