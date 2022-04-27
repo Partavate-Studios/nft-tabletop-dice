@@ -143,8 +143,15 @@ export const web3dice = {
 
   async buyRandomDice(qty) {
     let value = this.getPriceForDice(qty)
+    let gasLimit = 500_000 * qty
     try {
-      const transaction = await this.diceContract.buyRandomDice(qty, {value: value})
+      const transaction = await this.diceContract.buyRandomDice(
+        qty, 
+        {
+          value: value,
+          gasLimit: gasLimit
+        }
+      )
       this.watchTransaction(transaction)
       console.log(transaction)
       console.log('Minted new dice: ', qty)

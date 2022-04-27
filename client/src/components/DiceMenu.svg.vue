@@ -1,11 +1,11 @@
 <script setup>
 import Die from './_die.svg.vue'
-import dieBox from './_dicemenu-parts/SelectedDieBox.vue'
+import dieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
 </script>
 <script>
 import { web3dice } from '../web3dice.js'
 import { store } from '../store.js'
-import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.vue'
+import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
 
 export default {
   components: { SelectedDieBox },
@@ -21,6 +21,12 @@ export default {
       ownedDiceIndex: 0,
       store
     }
+  },
+  destroyed () {
+    window.removeEventListener('keyup', this.handleKeyPress)
+  },
+  created () {
+    window.addEventListener('keyup', this.handleKeyPress)
   },
   methods: {
     // TODO: These urls need to be based on the current network id
@@ -48,6 +54,13 @@ export default {
     },
     remove(id) {
       store.selectedDice[id] = null
+    },
+    removeIfSelected(diceId) {
+      for(let i=0;i<3;i++) {
+        if (store.selectedDice[i] == this.ownedDiceIndex) {
+          store.selectedDice[i] = null
+        }
+      }
     },
     selectOrRemove(id) {
       let diceId = store.selectedDice[id]
@@ -122,6 +135,35 @@ export default {
         return true
       }
       return false
+    },
+    handleKeyPress (event) {
+      switch (event.key) {
+        case '1':
+        case '2':
+        case '3':
+          if (store.selectedDice[event.key -1] != null) {
+            this.ownedDiceIndex = store.selectedDice[event.key -1]
+          }
+          break;
+        case 'ArrowRight':
+          this.goRight()
+          break
+        case 'ArrowLeft':
+          this.goLeft()
+          break
+        case 'ArrowDown':
+          this.quickadd();
+          break
+        case 'ArrowUp':
+          this.removeIfSelected();
+          break
+        case ' ':
+          this.quickadd();
+          break
+        case 'Escape':
+          this.close();
+          break
+      }
     }
   },
   computed: {
@@ -203,7 +245,7 @@ export default {
         <text transform="translate(0 0)" font-size="1.2em" fill="#aaaaaa">{{ store.diceTraits[ownedDiceIndex].name }}</text>
       </g>
       <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -65)">
-        <text transform="translate(0 0)" font-size="0.5em" fill="#ffffff">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
+        <text transform="translate(0 0)" font-size="0.6em" fill="#ffffff88">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
       </g>
 
       <g transform="translate(0 145)">

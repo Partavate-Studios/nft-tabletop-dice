@@ -1,6 +1,6 @@
 <script setup>
-import DotButtonAdd from './_dicemenu-parts/DotButtonAdd.vue'
-import DotButtonMinus from './_dicemenu-parts/DotButtonMinus.vue'
+import DotButtonAdd from './_dicemenu-parts/DotButtonAdd.svg.vue'
+import DotButtonMinus from './_dicemenu-parts/DotButtonMinus.svg.vue'
 import { ethers } from "ethers"
 </script>
 <script>

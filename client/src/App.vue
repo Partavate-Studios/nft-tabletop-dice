@@ -6,6 +6,7 @@ import PolydiceIcon from './components/polydice-icon.svg.vue'
 import PolygonLogo from './components/_polygon-logo.svg.vue'
 import Die from './components/_die.svg.vue'
 import DiceMenu from './components/DiceMenu.svg.vue'
+import DieLabel from './components/_dicemenu-parts/DieLabel.svg.vue'
 import BuyDice from './components/BuyDicePopup.svg.vue'
 import { web3dice } from './web3dice.js'
 
@@ -124,6 +125,27 @@ export default {
             <menu-icon @click="openMenu()" />
           </g>
 
+
+          <g transform="translate(0 350)" stroke-opacity="0.25">
+            <die-label
+              v-if="store.selectedDice[0] != null"
+              transform="translate(-160 0) scale(1)"
+              :diceId="store.selectedDice[0]"
+              :showRoll="true"
+            />
+            <die-label
+              v-if="store.selectedDice[1] != null"
+              transform="translate(0 0) scale(1)"
+              :diceId="store.selectedDice[1]"
+              :showRoll="true"
+            />
+            <die-label
+              v-if="store.selectedDice[2] != null"
+              transform="translate(160 0) scale(1)"
+              :diceId="store.selectedDice[2]"
+              :showRoll="true"
+            />
+          </g>
 
 
           <g transform="translate(0 120)">
