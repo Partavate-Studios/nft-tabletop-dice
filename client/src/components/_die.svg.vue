@@ -63,26 +63,26 @@ export default {
       return (this.diceid % this.sides + 1)
     },
     fontType () {
-      if (store.diceTraits[this.diceid]) {
-        return store.diceTraits[this.diceid].font
+      if (store.ownedDice[this.diceid]) {
+        return store.ownedDice[this.diceid].font
       }
       return this.diceid % 2
     },
     fontColor () {
-      if (store.diceTraits[this.diceid]) {
-        return '#' + store.diceTraits[this.diceid].fgColor
+      if (store.ownedDice[this.diceid]) {
+        return '#' + store.ownedDice[this.diceid].fgColor
       }
       return '#ffffff'
     },
     backgroundColor () {
-      if (store.diceTraits[this.diceid]) {
-        return '#' + store.diceTraits[this.diceid].bgColor
+      if (store.ownedDice[this.diceid]) {
+        return '#' + store.ownedDice[this.diceid].bgColor
       }
       return '#000088'
     },
     sides () {
-      if (store.diceTraits[this.diceid]) {
-        return store.diceTraits[this.diceid].sides
+      if (store.ownedDice[this.diceid]) {
+        return store.ownedDice[this.diceid].sides
       }
       return 20
     },
@@ -91,7 +91,7 @@ export default {
 </script>
 
 <template>
-  <g  v-if="store.ownedDice[diceid] != null && store.diceTraits[diceid] != null">
+  <g  v-if="store.ownedDice[diceid] != null && store.ownedDice[diceid] != null">
     <defs>
       <radialGradient id="dieshadow">
         <stop offset="0" stop-color="#000000" stop-opacity="1" />

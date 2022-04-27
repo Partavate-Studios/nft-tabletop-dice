@@ -41,7 +41,6 @@ export const web3dice = {
       }
     })
 
-
     //todo - if we were going multichain, we would need to get the correct
     //address for the contract based on which network is currently active
     console.log ('Wallet provider found')
@@ -73,7 +72,6 @@ export const web3dice = {
   },
 
   async switchNetwork() {
-
     //Todo: this will need to be smarter when we
     //release to polygon.
     const chainId = '0x13881'
@@ -121,7 +119,7 @@ export const web3dice = {
       store.lastRoll[diceId] = roll
       setTimeout(() => {
         store.isRolling[diceId] = false
-        console.log("Roll for #" + store.diceTraits[diceId].name + ": ", roll)
+        console.log("Roll for #" + store.ownedDice[diceId].name + ": ", roll)
       }, 1000)
       return roll
     } catch (error) {
@@ -182,26 +180,37 @@ export const web3dice = {
     return false
   },
 
-  async getTraits() {
+  async getOwnedDice() {
+    let diceList = []
     try {
-      store.ownedDice.forEach(async (diceId, index) => {
-        store.diceTraits[index] = await this.diceContract.getTraits(diceId)
-        //console.log(index, store.diceTraits[index])
-      }, this)
+      diceList  = await this.diceContract.tokenListOfOwner(store.address)
+    } catch (error) {
+      console.log("Error: ", error)
+    }
+    console.log('Checking your dice count: ', diceList)
+    diceList.forEach(async (diceId, index) => {
+      try {
+        let dieData = await this.getTraits(diceId)
+        console.log(dieData)
+        dieData['nftId'] = diceId
+        dieData[lastRoll] = Math.floor(Math.random() * dieData.sides)
+
+        store.ownedDice[index] = dieData
+        console.log('Dice loaded, lets play!', store.ownedDice)
+      } catch (error) {
+        store.ownedDice  = []
+        console.log("Error: ", error)
+      }
+    }, this)
+  },
+
+  async getTraits(diceId) {
+    try {
+      let diceTraits = await this.diceContract.getTraits(diceId)
+      return diceTraits
     } catch (error) {
       console.log("Error: ", error)
     }
   },
-
-  async getOwnedDice() {
-    try {
-      store.ownedDice  = await this.diceContract.tokenListOfOwner(store.address)
-      console.log('dice loaded: ', store.ownedDice)
-      await this.getTraits()
-    } catch (error) {
-      store.ownedDice  = []
-      console.log("Error: ", error)
-    }
-  }
 
 }

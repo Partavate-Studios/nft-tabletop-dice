@@ -241,11 +241,11 @@ export default {
         </g>
       </g>
 
-      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -100)">
-        <text transform="translate(0 0)" font-size="1.2em" fill="#aaaaaa">{{ store.diceTraits[ownedDiceIndex].name }}</text>
+      <g v-if="store.ownedDice[ownedDiceIndex]" transform="translate(0 -100)">
+        <text transform="translate(0 0)" font-size="1.2em" fill="#aaaaaa">{{ store.ownedDice[ownedDiceIndex].name }}</text>
       </g>
-      <g v-if="store.diceTraits[ownedDiceIndex]" transform="translate(0 -65)">
-        <text transform="translate(0 0)" font-size="0.6em" fill="#ffffff88">{{ store.diceTraits[ownedDiceIndex].sides }} sided</text>
+      <g v-if="store.ownedDice[ownedDiceIndex]" transform="translate(0 -65)">
+        <text transform="translate(0 0)" font-size="0.6em" fill="#ffffff88">{{ store.ownedDice[ownedDiceIndex].sides }} sided</text>
       </g>
 
       <g transform="translate(0 145)">
