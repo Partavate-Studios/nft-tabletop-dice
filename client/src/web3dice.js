@@ -216,7 +216,8 @@ export const web3dice = {
       fgColor: traits.fgColor,
       bgColor: traits.bgColor,
       font: traits.font,
-      lastRoll: Math.floor(Math.random() * traits.sides)
+      lastRoll: Math.floor(Math.random() * traits.sides),
+      isRolling: false
     }
   }
 
