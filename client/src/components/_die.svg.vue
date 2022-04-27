@@ -54,11 +54,11 @@ export default {
   },
   computed: {
     rolling () {
-      return store.isRolling[this.diceid]
+      return store.ownedDice[this.diceid].isRolling
     },
     value () {
-      if (store.lastRoll[this.diceid]) {
-        return parseInt(store.lastRoll[this.diceid])
+      if (store.ownedDice[this.diceid].lastRoll) {
+        return parseInt(store.ownedDice[this.diceid].lastRoll)
       }
       return (this.diceid % this.sides + 1)
     },

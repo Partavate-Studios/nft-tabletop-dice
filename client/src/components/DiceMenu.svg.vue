@@ -252,7 +252,7 @@ export default {
         <text font-size="0.5em" fill="#cccccc">{{ ownedDiceIndex }} of {{ store.ownedDice.length }}</text>
       </g>
       <g transform="translate(0 130)">
-        <text font-size="0.5em" fill="#cccccc">Die #{{ store.ownedDice[ownedDiceIndex] }}</text>
+        <text font-size="0.5em" fill="#cccccc">Die #{{ store.ownedDice[ownedDiceIndex].nftId }}</text>
       </g>
 
       <g stroke-width="4" stroke="#ffffff" transform="translate(-220 20)" v-if="isMoreLeft">

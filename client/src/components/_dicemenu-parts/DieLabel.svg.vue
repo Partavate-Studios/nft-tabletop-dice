@@ -70,7 +70,7 @@ export default {
     getDivergentColors() {
       let colorA = store.ownedDice[this.diceId].fgColor
       let colorB = store.ownedDice[this.diceId].bgColor
-      
+
       let luminanceA = this.getLuminanceValue(colorA)
       let luminanceB = this.getLuminanceValue(colorB)
       if (luminanceA > luminanceB) {
@@ -98,11 +98,10 @@ export default {
       return store.ownedDice[this.diceId].name
     },
     rollText() {
-      if (store.isRolling[this.diceId] || (store.lastRoll[this.diceId] == null)) {
+      if (store.ownedDice[this.diceId].isRolling || (store.ownedDice[this.diceId].lastRoll == null)) {
         return "?"
-      } 
-      return store.lastRoll[this.diceId]
-      
+      }
+      return store.ownedDice[this.diceId].lastRoll
     }
   }
 }

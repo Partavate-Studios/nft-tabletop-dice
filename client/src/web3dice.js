@@ -111,20 +111,20 @@ export const web3dice = {
   },
 
   async getRoll(diceId) {
-    let nftId = store.ownedDice[diceId]
-    store.isRolling[diceId] = true
+    let nftId = store.ownedDice[diceId].nftId
+    store.ownedDice[diceId].isRolling = true
     try {
       const nonce = parseInt(new Date().getTime() % 512);
       const roll = await this.diceContract.getRoll(nftId, nonce)
-      store.lastRoll[diceId] = roll
+      store.ownedDice[diceId].lastRoll = roll
       setTimeout(() => {
-        store.isRolling[diceId] = false
+        store.ownedDice[diceId].isRolling = false
         console.log("Roll for #" + store.ownedDice[diceId].name + ": ", roll)
       }, 1000)
       return roll
     } catch (error) {
       console.log("Error: ", error)
-      store.isRolling[diceId] = false
+      store.ownedDice[diceId].isRolling = false
       return 'failed'
     }
   },
@@ -144,7 +144,7 @@ export const web3dice = {
     let gasLimit = 500_000 * qty
     try {
       const transaction = await this.diceContract.buyRandomDice(
-        qty, 
+        qty,
         {
           value: value,
           gasLimit: gasLimit
@@ -188,17 +188,12 @@ export const web3dice = {
       console.log("Error: ", error)
     }
     console.log('Checking your dice count: ', diceList)
-    diceList.forEach(async (diceId, index) => {
+    diceList.forEach(async (dieId, index) => {
       try {
-        let dieData = await this.getTraits(diceId)
-        console.log(dieData)
-        dieData['nftId'] = diceId
-        dieData[lastRoll] = Math.floor(Math.random() * dieData.sides)
-
-        store.ownedDice[index] = dieData
+        let dieTraits = await this.getTraits(dieId)
+        store.ownedDice[index] = this.makeDieObject(dieId, dieTraits)
         console.log('Dice loaded, lets play!', store.ownedDice)
       } catch (error) {
-        store.ownedDice  = []
         console.log("Error: ", error)
       }
     }, this)
@@ -212,5 +207,17 @@ export const web3dice = {
       console.log("Error: ", error)
     }
   },
+
+  makeDieObject(diceId, traits) {
+    return {
+      nftId: diceId,
+      name: traits.name,
+      sides: traits.sides,
+      fgColor: traits.fgColor,
+      bgColor: traits.bgColor,
+      font: traits.font,
+      lastRoll: Math.floor(Math.random() * traits.sides)
+    }
+  }
 
 }
