@@ -1,6 +1,6 @@
 import { reactive } from 'vue'
 
-export const store = reactive({
+export const store = reactive({  
   web3: {
     hasWallet: false,
     isConnected: false,
@@ -12,11 +12,15 @@ export const store = reactive({
   diceLoaded: false,
   address: '',
   block: 0,
+
+  myDice: [],
+
   lastRoll: [],
   diceTraits: [],
   isRolling: [],
   ownedDice: [
   ],
+
   selectedDice: [
     null,
     null,
