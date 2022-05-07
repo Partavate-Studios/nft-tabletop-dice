@@ -6,13 +6,14 @@ export const store = reactive({
     isConnected: false,
     chain: null,
     accounts: null,
+    activeAccount: null,
     validNetwork: false,
     blockExplorer: null,
-    openSea: null
+    openSea: null,
+    balance: 0
     //todo: one array of dice objects with roll and trait properties
   },
   diceLoaded: false,
-  address: '',
   block: 0,
 
   //TODO: versioning should be automated

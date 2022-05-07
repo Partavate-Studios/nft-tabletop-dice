@@ -1,10 +1,12 @@
 <script setup>
 import DotButtonAdd from './_dicemenu-parts/DotButtonAdd.svg.vue'
 import DotButtonMinus from './_dicemenu-parts/DotButtonMinus.svg.vue'
+import SquareButton from './SquareButton.svg.vue'
+import { web3dice } from '../web3dice.js'
 import { ethers } from "ethers"
+import {store } from '../store.js'
 </script>
 <script>
-import { web3dice } from '../web3dice.js'
 
 export default {
   props: {
@@ -15,6 +17,7 @@ export default {
   },
   data () {
     return {
+      store,
       qty: 1,
       price: 0,
       maxBuy: 5
@@ -55,6 +58,12 @@ export default {
     },
     canDecrease() {
       return this.qty > 1
+    },
+    canAfford() {
+      if ((this.price == 0) || (this.price > store.web3.balance)) {
+        return false
+      }
+      return true
     }
   }
 }
@@ -88,14 +97,30 @@ export default {
         </g>
 
         <g transform="translate(-110 100)">
-            <rect x="-80" y="-20" width="160" height="40" fill="#ffaa00" fill-opacity="0.5" stroke="#ffaa00" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-            <text font-size="0.6em">Nevermind</text>
-            <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="close" class="can-click" />
+          <square-button
+            font-size="0.6em"
+            :width="160" :height="40"
+            btnstyle="red"
+            label="Nevermind"
+            @click="close" />
         </g>
         <g transform="translate(110 100)">
-            <rect x="-80" y="-20" width="160" height="40" fill="#44ff44" fill-opacity="0.5" stroke="#44ff44" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-            <text font-size="0.6em">Mint My Dice</text>
-            <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="checkout" class="can-click" />
+          <g v-if="price == 0">
+            <text font-size="0.6em">Calculating</text>
+          </g>
+          <g v-else-if="canAfford">
+            <square-button
+              v-if="canAfford"
+              font-size="0.6em"
+              :width="160"
+              :height="40"
+              btnstyle="mint"
+              label="Mint My Dice"
+              @click="checkout" />
+          </g>
+          <g v-else="">
+            <text font-size="0.6em">Too expensive.</text>
+          </g>
         </g>
     </g>
   </g>
