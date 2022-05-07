@@ -12,7 +12,7 @@ export const web3dice = {
 
   async init() {
     try {
-      this.provider = new ethers.providers.Web3Provider(window.ethereum,"any")
+      this.provider = new ethers.providers.Web3Provider(window.ethereum, "any")
     } catch (e) {
       console.log('Error: ' + e.message)
       return
@@ -30,6 +30,10 @@ export const web3dice = {
       if (oldNetwork) {
           window.location.reload()
       }
+    })
+
+    window.ethereum.on('accountsChanged', () => {
+          window.location.reload()
     })
 
     //Choose the contract address based on the chainId
