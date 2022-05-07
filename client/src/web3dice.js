@@ -12,26 +12,17 @@ export const web3dice = {
 
   async init() {
     try {
-      this.provider = new ethers.providers.Web3Provider(window.ethereum,"any")
+      this.provider = new ethers.providers.Web3Provider(window.ethereum, "any")
     } catch (e) {
       console.log('Error: ' + e.message)
       return
     }
     store.web3.hasWallet = true
 
-
     try {
       store.web3.chain = await this.provider.getNetwork()
     } catch (e) {
       console.log('Error: ' + e.message)
-    }
-
-    //Choose the contract address based on the chainId
-    if (String(store.web3.chain.chainId) in Addresses) {
-      this.diceContractAddress = Addresses[store.web3.chain.chainId]
-      store.web3.validNetwork = true
-    } else {
-      console.log('no known contract address, is this a valid network?')
     }
 
     this.provider.on("network", (newNetwork, oldNetwork) => {
@@ -40,6 +31,22 @@ export const web3dice = {
           window.location.reload()
       }
     })
+
+    window.ethereum.on('accountsChanged', () => {
+          window.location.reload()
+    })
+
+    //Choose the contract address based on the chainId
+    if (String(store.web3.chain.chainId) in Addresses) {
+      this.diceContractAddress = Addresses[store.web3.chain.chainId]
+      store.web3.validNetwork = true
+      store.web3.blockExplorer = this.getBlockExplorerUrl()
+      store.web3.openSea = this.getOpenSeaUrl()
+    } else {
+      console.log('no known contract address, is this a valid network?')
+      return
+    }
+
 
     //todo - if we were going multichain, we would need to get the correct
     //address for the contract based on which network is currently active
@@ -50,6 +57,30 @@ export const web3dice = {
     //}
   },
 
+  getBlockExplorerUrl () {
+    //Polygon Mumbai Test Network
+    if (String(store.web3.chain.chainId) == '80001') {
+      return 'https://mumbai.polygonscan.com/address/' + this.diceContractAddress
+    }
+    //Polygon Main Net
+    if (String(store.web3.chain.chainId) == '137') {
+      return 'https://polygonscan.com/address/' + this.diceContractAddress
+    }
+    return null
+  },
+
+  getOpenSeaUrl () {
+    //Polygon Mumbai Test Network
+    if (String(store.web3.chain.chainId) == '80001') {
+      return 'https://testnets.opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+    }
+    //Polygon Main Net
+    if (String(store.web3.chain.chainId) == '137') {
+      return 'https://opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+    }
+    return null
+  },
+
   async connect() {
     try {
       store.web3.accounts = await this.provider.send("eth_requestAccounts", [])
@@ -58,6 +89,7 @@ export const web3dice = {
       return
     }
     this.signer = await this.provider.getSigner()
+
     this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
     console.log(await this.diceContract.address)
 
@@ -187,16 +219,16 @@ export const web3dice = {
     } catch (error) {
       console.log("Error: ", error)
     }
-    console.log('Checking your dice count: ', diceList)
+    console.log('Dice found, loading details: ', diceList)
     diceList.forEach(async (dieId, index) => {
       try {
         let dieTraits = await this.getTraits(dieId)
-        store.ownedDice[index] = this.makeDieObject(dieId, dieTraits)
-        console.log('Dice loaded, lets play!', store.ownedDice)
+        store.addDie(this.makeDieObject(dieId, dieTraits))
       } catch (error) {
         console.log("Error: ", error)
       }
     }, this)
+    console.log('Dice loaded, lets play!', typeof store.ownedDice)
   },
 
   async getTraits(diceId) {

@@ -1,11 +1,12 @@
 <script setup>
 import Die from './_die.svg.vue'
 import dieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
-</script>
-<script>
+import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
+import SquareButton from './SquareButton.svg.vue'
 import { web3dice } from '../web3dice.js'
 import { store } from '../store.js'
-import SelectedDieBox from './_dicemenu-parts/SelectedDieBox.svg.vue'
+</script>
+<script>
 
 export default {
   components: { SelectedDieBox },
@@ -31,12 +32,7 @@ export default {
   methods: {
     // TODO: These urls need to be based on the current network id
     shop() {
-      const url = "https://testnets.opensea.io/assets?search%5Bquery%5D="+web3dice.diceContractAddress
-      window.open(url, '_blank')
-    },
-    explorer() {
-      const url = "https://mumbai.polygonscan.com/address/"+web3dice.diceContractAddress
-      window.open(url, '_blank')
+      window.open(store.web3.openSea, '_blank')
     },
     close() {
       this.$emit('close')
@@ -69,7 +65,6 @@ export default {
       } else {
         this.ownedDiceIndex = diceId
       }
-
     },
     async mintRandomDie() {
       const dice = await web3dice.mintRandomDie()
@@ -199,6 +194,18 @@ export default {
       }
       return false
     },
+    diceSelected() {
+      if(store.selectedDice[0] != null) {
+        return true
+      }
+      if(store.selectedDice[1] != null) {
+        return true
+      }
+      if(store.selectedDice[2] != null) {
+        return true
+      }
+      return false
+    }
   }
 }
 </script>
@@ -270,9 +277,10 @@ export default {
     <g transform="translate(0 -150)" v-else>
       <text>You don't have any dice yet.</text>
       <g transform="translate(0 100)">
-        <rect x="-180" y="-40" width="360" height="80" fill="#008800" fill-opacity="0.5" stroke="#ffff00" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Mint Yourself Some New Dice!</text>
-        <rect x="-180" y="-40" width="360" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="openBuyDice" class="can-click" />
+        <square-button font-size="0.8em" btnstyle="mint" label="Mint Yourself Some New Dice!" :width="360" :height="80" @click="openBuyDice" />
+      </g>
+      <g transform="translate(0 220)">
+        <square-button font-size="0.8em" btnstyle="cornflower" label="Shop for Dice on OpenSea!" :width="360" :height="80" @click="shop" />
       </g>
     </g>
 
@@ -321,33 +329,39 @@ export default {
 
     <g transform="translate(0 350)">
       <g transform="translate(200 20)">
-        <rect x="-80" y="-40" width="160" height="80" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Mint New Dice</text>
-        <rect x="-80" y="-40" width="160" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="openBuyDice" class="can-click" />
+        <square-button
+          label="Mint New Dice"
+          :width="160"
+          :height="50"
+          btnstyle="mint"
+          font-size="0.7em"
+          @click="openBuyDice" />
       </g>
-      <g transform="translate(-200 50)">
-        <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Browse Dice</text>
-        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="shop" class="can-click" />
-      </g>
-
-      <g transform="translate(-200 0)">
-        <rect x="-80" y="-20" width="160" height="40" fill="#4444ff" fill-opacity="0.5" stroke="#4444ff" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">View Contract</text>
-        <rect x="-80" y="-20" width="160" height="40" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="explorer" class="can-click" />
+      <g transform="translate(-200 20)">
+        <square-button
+          label="Browse Dice"
+          :width="160"
+          :height="50"
+          btnstyle="cornflower"
+          font-size="0.7em"
+          @click="shop" />
       </g>
 
       <g transform="translate(0 20)">
-        <rect x="-100" y="-40" width="200" height="80" fill="#ff44dd" fill-opacity="0.5" stroke="#ff44dd" stroke-opacity="0.2" stroke-width="2" rx="25" ry="25" />
-        <text font-size="0.9em" v-if="haveDice">Let's Play!</text>
-        <text font-size="0.6em" v-else>Close</text>
-        <rect x="-100" y="-40" width="200" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="close" class="can-click" />
+        <square-button
+          :label="diceSelected ? 'Let\'s Play' : 'Close Menu'"
+          :width="200"
+          :height="80"
+          btnstyle="pink"
+          font-size="1.1em"
+          @click="close()" />
+
       </g>
     </g>
   </g>
 </template>
 
-<style>
+<style scoped>
   g.show {
     transform: rotate(0deg);
   }

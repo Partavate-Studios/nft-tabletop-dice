@@ -101,7 +101,7 @@ export default {
   </g>
 </template>
 
-<style>
+<style scoped>
   g.show {
     transform: rotate(0deg);
   }
