@@ -123,7 +123,7 @@ export default {
       <text
         v-if="showRoll"
         text-anchor="end"
-        transform="translate(60 0)"
+        transform="translate(58 1)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"
@@ -132,7 +132,7 @@ export default {
       <text
         v-if="showRoll"
         text-anchor="start"
-        transform="translate(-65 0)"
+        transform="translate(-60 0)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"

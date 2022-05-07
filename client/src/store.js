@@ -1,23 +1,25 @@
 import { reactive } from 'vue'
 
-export const store = reactive({  
+export const store = reactive({
   web3: {
     hasWallet: false,
     isConnected: false,
     chain: null,
     accounts: null,
     validNetwork: false,
+    blockExplorer: null
     //todo: one array of dice objects with roll and trait properties
   },
   diceLoaded: false,
   address: '',
   block: 0,
 
-  myDice: [],
+  //TODO: versioning should be automated
+  version: {
+    client: "0.2.1",
+    contract: "0.2"
+  },
 
-  lastRoll: [],
-  diceTraits: [],
-  isRolling: [],
   ownedDice: [
   ],
 
@@ -25,5 +27,11 @@ export const store = reactive({
     null,
     null,
     null
-  ]
+  ],
+
+  addDie(dieData) {
+    if (!this.ownedDice.find(die=>die.nftId === dieData.nftId)) {
+      this.ownedDice.push(dieData)
+    }
+  }
 })
