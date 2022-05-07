@@ -32,8 +32,15 @@ export const web3dice = {
       }
     })
 
+    this.provider.on("block", async (newNetwork, oldNetwork) => {
+      if (store.web3.activeAccount) {
+        let balance = await this.provider.getBalance(store.web3.activeAccount)
+        store.web3.balance = ethers.utils.formatEther(balance)
+      }
+    })
+
     window.ethereum.on('accountsChanged', () => {
-          window.location.reload()
+      window.location.reload()
     })
 
     //Choose the contract address based on the chainId
@@ -95,9 +102,11 @@ export const web3dice = {
 
     this.signer.getAddress().then( async (address) => {
       console.log('signer address found')
-      store.address = address
+      store.web3.activeAccount = address
       this.diceContract.connect(this.signer)
       this.getOwnedDice()
+      let balance = await this.provider.getBalance(store.web3.activeAccount)
+      store.web3.balance = ethers.utils.formatEther(balance)
       store.web3.isConnected = true
     }, this)
 
@@ -183,7 +192,7 @@ export const web3dice = {
         }
       )
       this.watchTransaction(transaction)
-      console.log(transaction)
+      console.log('Waiting on purchase transacton: ' + transaction)
       console.log('Minted new dice: ', qty)
       return true
     } catch (error) {
@@ -215,7 +224,7 @@ export const web3dice = {
   async getOwnedDice() {
     let diceList = []
     try {
-      diceList  = await this.diceContract.tokenListOfOwner(store.address)
+      diceList  = await this.diceContract.tokenListOfOwner(store.web3.activeAccount)
     } catch (error) {
       console.log("Error: ", error)
     }
