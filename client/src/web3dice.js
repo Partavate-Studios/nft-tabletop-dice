@@ -37,6 +37,7 @@ export const web3dice = {
       this.diceContractAddress = Addresses[store.web3.chain.chainId]
       store.web3.validNetwork = true
       store.web3.blockExplorer = this.getBlockExplorerUrl()
+      store.web3.openSea = this.getOpenSeaUrl()
     } else {
       console.log('no known contract address, is this a valid network?')
       return
@@ -60,6 +61,18 @@ export const web3dice = {
     //Polygon Main Net
     if (String(store.web3.chain.chainId) == '137') {
       return 'https://polygonscan.com/address/' + this.diceContractAddress
+    }
+    return null
+  },
+
+  getOpenSeaUrl () {
+    //Polygon Mumbai Test Network
+    if (String(store.web3.chain.chainId) == '80001') {
+      return 'https://testnets.opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+    }
+    //Polygon Main Net
+    if (String(store.web3.chain.chainId) == '137') {
+      return 'https://opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
     }
     return null
   },

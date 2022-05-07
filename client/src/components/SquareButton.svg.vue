@@ -74,6 +74,14 @@ export default {
           attribs.strokeOpacity = 0.2
           attribs.strokeWidth = 2
           break;
+        case 'mint':
+          attribs.fillColor = '#008800'
+          attribs.fillColorHover = '#004400'
+          attribs.fillOpacity = 0.5
+          attribs.strokeColor = '#ffff00'
+          attribs.strokeOpacity = 0.2
+          attribs.strokeWidth = 2
+          break;
         case 'red':
           attribs.fillColor = '#aa0000'
           attribs.fillColorHover = '#ff0000'

@@ -32,8 +32,7 @@ export default {
   methods: {
     // TODO: These urls need to be based on the current network id
     shop() {
-      const url = "https://testnets.opensea.io/assets?search%5Bquery%5D="+web3dice.diceContractAddress
-      window.open(url, '_blank')
+      window.open(store.web3.openSea, '_blank')
     },
     close() {
       this.$emit('close')
@@ -278,9 +277,10 @@ export default {
     <g transform="translate(0 -150)" v-else>
       <text>You don't have any dice yet.</text>
       <g transform="translate(0 100)">
-        <rect x="-180" y="-40" width="360" height="80" fill="#008800" fill-opacity="0.5" stroke="#ffff00" stroke-opacity="0.2" stroke-width="2" rx="15" ry="15" />
-        <text font-size="0.6em">Mint Yourself Some New Dice!</text>
-        <rect x="-180" y="-40" width="360" height="80" fill="#ffffff" fill-opacity="0" stroke="#ffffff"  stroke-width="0" @click="openBuyDice" class="can-click" />
+        <square-button font-size="0.8em" btnstyle="mint" label="Mint Yourself Some New Dice!" :width="360" :height="80" @click="openBuyDice" />
+      </g>
+      <g transform="translate(0 220)">
+        <square-button font-size="0.8em" btnstyle="cornflower" label="Shop for Dice on OpenSea!" :width="360" :height="80" @click="shop" />
       </g>
     </g>
 
@@ -333,7 +333,7 @@ export default {
           label="Mint New Dice"
           :width="160"
           :height="50"
-          btnstyle="cornflower"
+          btnstyle="mint"
           font-size="0.7em"
           @click="openBuyDice" />
       </g>
