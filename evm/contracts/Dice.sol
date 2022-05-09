@@ -165,6 +165,7 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         for(uint i=0; i < count; i++) {
             _mintRandomDie(msg.sender);
         }
+        pricePerDie = pricePerDie * 1.0025
         (bool success,) = accountsRecievable.call{value: msg.value}("");
         require(success, "Failed to forward payment.");
     }
