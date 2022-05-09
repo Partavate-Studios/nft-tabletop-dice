@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 import "./DiceLibrary.sol";
 import "./ERC721SimpleEnumerable.sol";
@@ -130,8 +129,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return (string(abi.encodePacked(_baseURIvalue, diceLib.getTokenURIpath(tokenId))));
     }
 
-    function getMintingCost(uint8 qty) public view returns (uint256 cost) {
-        return pricePerDie * uint256(qty);
+    function getMintingCost() public view returns (uint256 cost) {
+        return pricePerDie;
     }
 
     function getOwnedTokenIds() public view returns (uint256[] memory) {
@@ -161,11 +160,11 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     }
 
     function buyRandomDice(uint8 count) public payable {
-        require((msg.value >= getMintingCost(count)), "not enough cash");
+        require((msg.value >= pricePerDie * count), "not enough cash");
         for(uint i=0; i < count; i++) {
             _mintRandomDie(msg.sender);
         }
-        pricePerDie = pricePerDie * 1.0025
+        pricePerDie = pricePerDie * 10025 / 10000; // +0.25%
         (bool success,) = accountsRecievable.call{value: msg.value}("");
         require(success, "Failed to forward payment.");
     }

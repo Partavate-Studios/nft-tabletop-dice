@@ -1,5 +1,5 @@
 import { store } from './store.js'
-import { ethers } from "ethers"
+import { ethers, BigNumber } from "ethers"
 import Dice from '../../evm/artifacts/contracts/Dice.sol/TabletopDiceNFT.json'
 import Addresses from '../../evm/addresses/published-addresses.json'
 
@@ -33,9 +33,8 @@ export const web3dice = {
     })
 
     this.provider.on("block", async (newNetwork, oldNetwork) => {
-      if (store.web3.activeAccount) {
-        let balance = await this.provider.getBalance(store.web3.activeAccount)
-        store.web3.balance = ethers.utils.formatEther(balance)
+      if (store.web3.isConnected) {
+        this.updateNewBlockData()
       }
     })
 
@@ -105,11 +104,19 @@ export const web3dice = {
       store.web3.activeAccount = address
       this.diceContract.connect(this.signer)
       this.getOwnedDice()
-      let balance = await this.provider.getBalance(store.web3.activeAccount)
-      store.web3.balance = ethers.utils.formatEther(balance)
+      this.updateNewBlockData()
       store.web3.isConnected = true
     }, this)
 
+  },
+
+  async updateNewBlockData() {
+    let balance = await this.provider.getBalance(store.web3.activeAccount)
+    store.web3.balance = ethers.utils.formatEther(balance)
+    let weiPrice = await this.diceContract.getMintingCost()
+    store.web3.weiPrice = weiPrice
+    store.web3.price = ethers.utils.formatEther(weiPrice)
+    console.log('Current die cost: ' + store.web3.price)
   },
 
   async switchNetwork() {
@@ -170,24 +177,15 @@ export const web3dice = {
     }
   },
 
-  async getPriceForDice(qty) {
-    try {
-      let price = await this.diceContract.getMintingCost(qty)
-      return price
-    } catch (error) {
-      console.log("Error: ", error)
-    }
-    return 0
-  },
-
   async buyRandomDice(qty) {
-    let value = this.getPriceForDice(qty)
+    await this.updateNewBlockData()
+    let price = BigNumber.from(store.web3.weiPrice).mul(qty)
     let gasLimit = 500_000 * qty
     try {
       const transaction = await this.diceContract.buyRandomDice(
         qty,
         {
-          value: value,
+          value: price,
           gasLimit: gasLimit
         }
       )

@@ -10,7 +10,9 @@ export const store = reactive({
     validNetwork: false,
     blockExplorer: null,
     openSea: null,
-    balance: 0
+    balance: 0,
+    weiPrice: 0,
+    price: 0
     //todo: one array of dice objects with roll and trait properties
   },
   diceLoaded: false,
