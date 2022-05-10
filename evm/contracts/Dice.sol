@@ -17,7 +17,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     using RandomNameLibrary for RandomNameLibrary.WordStorage;
 
     uint256 pricePerDie = 0.173 ether;
-    uint256 constant maxDicePerTransaction = 5;
+
+    uint256 constant maxDicePerTransaction = 7;
     address payable accountsRecievable;
 
     Counters.Counter private _tokenIds;
@@ -129,10 +130,6 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return (string(abi.encodePacked(_baseURIvalue, diceLib.getTokenURIpath(tokenId))));
     }
 
-    function getMintingCost() public view returns (uint256 cost) {
-        return pricePerDie;
-    }
-
     function getOwnedTokenIds() public view returns (uint256[] memory) {
         uint256 ownedCnt = balanceOf(msg.sender);
         uint256[] memory tokenIds = new uint256[](ownedCnt);
@@ -159,12 +156,16 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return diceLib.getTraits(tokenId);
     }
 
+    function getMintingCost() public view returns (uint256 cost) {
+        return pricePerDie;
+    }
+
     function buyRandomDice(uint8 count) public payable {
-        require((msg.value >= pricePerDie * count), "not enough cash");
+        require((msg.value >= pricePerDie * count),
+        "not enough cash");
         for(uint i=0; i < count; i++) {
             _mintRandomDie(msg.sender);
         }
-        pricePerDie = pricePerDie * 10025 / 10000; // +0.25%
         (bool success,) = accountsRecievable.call{value: msg.value}("");
         require(success, "Failed to forward payment.");
     }
