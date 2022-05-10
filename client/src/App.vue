@@ -94,8 +94,13 @@ export default {
         </g>
 
         <g v-if="!store.web3.hasWallet">
-          <text transform="translate(0 -50)">I called out looking for your Web3 wallet provider;</text>
+          <text transform="translate(0 -50)">I called out to your Web3 wallet provider;</text>
           <text>but alas, I heard only silence.</text>
+          <text transform="translate(0 50)">Check your wallet and reload this page.</text>
+
+          <g v-if="store.error" font-size="0.55em" fill="#ff8888">
+            <text transform="translate(0 150)">{{ store.error }}</text>
+          </g>
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
         </g>
 
@@ -114,6 +119,10 @@ export default {
               <square-button label="Connect It!" @click="connect()" />
             </g>
           </g>
+          <g v-if="store.error" font-size="0.75em" fill="#ff8888">
+            <text transform="translate(0 150)">Error: {{ store.error }}</text>
+          </g>
+
         </g>
 
         <g v-else>
