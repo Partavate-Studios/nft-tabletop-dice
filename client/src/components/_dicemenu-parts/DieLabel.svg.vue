@@ -112,8 +112,8 @@ export default {
 
     <g v-if="diceId != null">
       <rect
-        x="-70" y="-15"
-        width="140" height="30"
+        x="-80" y="-15"
+        width="160" height="30"
         :fill="'#'+diceLabelBackground"
         stroke="#ffffff"
         fill-opacity="1"
@@ -123,23 +123,23 @@ export default {
       <text
         v-if="showRoll"
         text-anchor="end"
-        transform="translate(58 1)"
+        transform="translate(70 1)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"
-        font-size="0.8em"
+        font-size="0.7em"
       >{{ rollText }}</text>
       <text
         v-if="showRoll"
         text-anchor="start"
-        transform="translate(-60 0)"
+        transform="translate(-70 0)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"
         font-size="0.55em"
       >{{ dieName }}</text>
       <text
-        v-else=""
+        v-if="!showRoll"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"

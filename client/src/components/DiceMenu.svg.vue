@@ -349,7 +349,7 @@ export default {
 
       <g transform="translate(0 20)">
         <square-button
-          :label="diceSelected ? 'Let\'s Play' : 'Close Menu'"
+          :label="diceSelected ? 'Let\'s Roll' : 'Close Menu'"
           :width="200"
           :height="80"
           btnstyle="pink"

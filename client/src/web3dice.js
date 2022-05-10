@@ -38,14 +38,11 @@ export const web3dice = {
       store.web3.validNetwork = true
       store.web3.blockExplorer = this.getBlockExplorerUrl()
       store.web3.openSea = this.getOpenSeaUrl()
+      console.log ('ChainID ' + store.web3.chain.chainId +' is a supprted network.')
     } else {
       console.log('no known contract address, is this a valid network?')
       return
     }
-    console.log ('ChainID ' + store.web3.chain.chainId +' is a supprted network.')
-
-    console.log()
-
   },
 
   applyReloadBindings() {
@@ -69,6 +66,7 @@ export const web3dice = {
       store.error = e.message
       return
     } finally {
+      console.log('Account request accepted.')
       await this.getSignerAndContract()
     }
   },
@@ -84,6 +82,7 @@ export const web3dice = {
     } finally {
       console.log('Signer address found: ', address)
       store.web3.activeAccount = address
+      await this.connectContract()
     }
   },
 
@@ -104,7 +103,7 @@ export const web3dice = {
   async preloadDiceData() {
     let balance = await this.provider.getBalance(store.web3.activeAccount)
     store.web3.balance = ethers.utils.formatEther(balance)
-    console.log('Initial balance: ', store.web3.balances)
+    console.log('Initial balance: ', store.web3.balance)
 
     let weiPrice = await this.diceContract.getMintingCost()
     store.web3.weiPrice = weiPrice
@@ -165,10 +164,10 @@ export const web3dice = {
 
   async delayedRoll(diceId) {
     let rollDelay = Math.floor(Math.random() * 20)
-    setTimeout(() => {this.getRoll(diceId)}, rollDelay)
+    setTimeout(() => {this.getRollFromContract(diceId)}, rollDelay)
   },
 
-  async getRoll(diceId) {
+  async getRollFromContract(diceId) {
     let nftId = store.ownedDice[diceId].nftId
     store.ownedDice[diceId].isRolling = true
     try {
@@ -188,9 +187,15 @@ export const web3dice = {
   },
 
   async buyRandomDice(qty) {
-    await this.updateNewBlockData()
     let price = BigNumber.from(store.web3.weiPrice).mul(qty)
-    let gasLimit = 500_000 * qty
+    let estimate = 0
+    try {
+      estimate = await this.diceContract.estimateGas.buyRandomDice(qty, {value: price})
+    } catch (e) {
+      console.log(e.message)
+    }
+    let lowerBound = (500_000 * qty)
+    let gasLimit = (estimate > lowerBound) ? estimate + 100_000 : lowerBound + 100_000
     try {
       const transaction = await this.diceContract.buyRandomDice(
         qty,
