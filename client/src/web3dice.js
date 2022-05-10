@@ -21,7 +21,13 @@ export const web3dice = {
     }
     store.web3.hasWallet = true
     console.log ('Wallet provider found.')
-    this.applyReloadBindings()
+
+    this.provider.on("network", (newNetwork, oldNetwork) => {
+      if (oldNetwork) {
+        console.log('Network change detected')
+        window.location.reload()
+      }
+    })
 
     try {
       store.web3.chain = await this.provider.getNetwork()
@@ -43,19 +49,6 @@ export const web3dice = {
       console.log('no known contract address, is this a valid network?')
       return
     }
-  },
-
-  applyReloadBindings() {
-    this.provider.on("network", (newNetwork, oldNetwork) => {
-      if (oldNetwork) {
-        console.log('Network change detected')
-        window.location.reload()
-      }
-    })
-    window.ethereum.on('accountsChanged', () => {
-      console.log('Account change detected')
-      window.location.reload()
-    })
   },
 
   async connect() {
@@ -84,6 +77,10 @@ export const web3dice = {
       store.web3.activeAccount = address
       await this.connectContract()
     }
+    window.ethereum.on('accountsChanged', () => {
+      console.log('Account change detected')
+      window.location.reload()
+    })
   },
 
   async connectContract() {
@@ -147,7 +144,7 @@ export const web3dice = {
             symbol: 'MATIC',
             decimals: 18
           },
-          rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+          rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
           blockExplorerUrls: ['https://mumbai.polygonscan.com/']
         }]
         try {
