@@ -66,16 +66,14 @@ export const web3dice = {
   },
 
   async getSignerAndContract() {
-    let address = ''
     try {
       this.signer = await this.provider.getSigner()
-      address = await this.signer.getAddress()
+      store.web3.activeAccount = await this.signer.getAddress()
     } catch (e) {
       console.log('Error: ' + e.message)
       store.error = e.message
     } finally {
-      console.log('Signer address found: ', address)
-      store.web3.activeAccount = address
+      console.log('Signer address found: ', store.web3.activeAccount)
       await this.connectContract()
     }
     window.ethereum.on('accountsChanged', () => {

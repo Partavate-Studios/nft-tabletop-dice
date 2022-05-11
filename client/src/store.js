@@ -17,7 +17,7 @@ export const store = reactive({
   },
   diceLoaded: false,
   block: 0,
-  error: 'testing',
+  error: null,
 
   //TODO: versioning should be automated
   version: {
