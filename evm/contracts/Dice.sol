@@ -29,7 +29,7 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
 
     constructor(string[] memory adjectives, string[] memory nouns)
         ERC721(string(abi.encodePacked("PolyDice dApp v", version)), "PolyDice") {
-        _baseURIvalue = "https://dice.partavate.com";
+        _baseURIvalue = "https://polydice.app";
         accountsRecievable = payable(msg.sender);
         addWords(adjectives, nouns);
         diceLib.possibleSides.push(6);
