@@ -2,6 +2,7 @@ import { store } from './store.js'
 import { ethers, BigNumber } from "ethers"
 import Dice from '../../evm/artifacts/contracts/Dice.sol/TabletopDiceNFT.json'
 import Addresses from '../../evm/addresses/published-addresses.json'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 export const web3dice = {
   provider: null,
@@ -11,12 +12,12 @@ export const web3dice = {
   diceContractAddress: null,
 
   async init() {
-
     try {
-      this.provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+      let provider = await detectEthereumProvider()
+      this.provider = new ethers.providers.Web3Provider(provider, "any")
     } catch (e) {
       console.log('Error: ' + e.message)
-      store.error = 'e.message'
+      store.error = e.message
       return
     }
     store.web3.hasWallet = true
@@ -33,7 +34,7 @@ export const web3dice = {
       store.web3.chain = await this.provider.getNetwork()
     } catch (e) {
       console.log('Error: ' + e.message)
-      store.error = 'e.message'
+      store.error = e.message
       return
     }
     console.log ('EVM network found.')
@@ -86,28 +87,41 @@ export const web3dice = {
   async connectContract() {
     try {
       this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
-      await this.diceContract.connect(this.signer)
+      this.dieContract
+      this.diceContract.connect(this.signer)
     } catch(e) {
       console.log('Error: ' + e.message)
       store.error = e.message
     } finally {
       console.log('Connected to contract: ', await this.diceContract.address)
+      await this.preloadDiceData()
       store.web3.isConnected = true
-      this.preloadDiceData()
     }
   },
 
   async preloadDiceData() {
-    let balance = await this.provider.getBalance(store.web3.activeAccount)
-    store.web3.balance = ethers.utils.formatEther(balance)
-    console.log('Initial balance: ', store.web3.balance)
+    let balance = 0
+    try {
+      balance = await this.provider.getBalance(store.web3.activeAccount)
+    } catch (e) {
+      console.log('Error: ' + e.message)
+      store.error = e.message
+    } finally {
+      store.web3.balance = ethers.utils.formatEther(balance)
+      console.log('Initial balance: ', store.web3.balance)
+    }
 
-    let weiPrice = await this.diceContract.getMintingCost()
-    store.web3.weiPrice = weiPrice
-    store.web3.price = ethers.utils.formatEther(weiPrice)
-    console.log('Current die cost: ' + store.web3.price + ' Matic each')
+    try {
+      store.web3.weiPrice = await this.diceContract.getMintingCost()
+    } catch (e) {
+      console.log('Error: ' + e.message)
+      store.error = e.message
+    } finally {
+      store.web3.price = ethers.utils.formatEther(store.web3.weiPrice)
+      console.log('Current die cost: ' + store.web3.price + ' Matic each')
+    }
 
-    this.getOwnedDice()
+    await this.getOwnedDice()
 
     this.provider.on("block", async () => {
       if (store.web3.isConnected) {
@@ -213,9 +227,8 @@ export const web3dice = {
 
   async watchTransaction(transaction) {
     const receipt = await transaction.wait()
-    this.getOwnedDice()
     if (receipt) {
-      alert ("You have new dice!")
+      alert ("Congrats, you have new dice!")
     } else {
       alert ("We regret to inform you that your dice purchase request failed.")
     }
