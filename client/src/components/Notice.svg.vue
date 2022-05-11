@@ -37,7 +37,7 @@ export default {
 
 <template>
   <g class="alert" :class="{show: show, hide: !show}">
-    <g transform="translate(0 470)">
+    <g transform="translate(0 420)">
       <rect
         x="-320" y="-25"
         width="640" height="50"
@@ -64,7 +64,7 @@ export default {
     transform: translate(0, 0px);
   }
   g.hide {
-    transform: translate(0, 200px);
+    transform: translate(0, 300px);
     opacity: 0;
   }
   g.alert {
