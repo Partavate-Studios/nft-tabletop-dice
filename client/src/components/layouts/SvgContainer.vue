@@ -49,5 +49,6 @@ export default {
 
 <style>
 svg {
+  max-width: 100%;
 }
 </style>

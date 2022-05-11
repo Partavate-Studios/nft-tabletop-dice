@@ -17,11 +17,11 @@ export const store = reactive({
   },
   diceLoaded: false,
   block: 0,
-  error: null,
+  alert: null,
 
   //TODO: versioning should be automated
   version: {
-    client: "0.2.7",
+    client: "0.2.8",
     contract: "0.2.2"
   },
 

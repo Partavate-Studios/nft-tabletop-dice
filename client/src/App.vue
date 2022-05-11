@@ -9,6 +9,7 @@ import DiceMenu from './components/DiceMenu.svg.vue'
 import BuyDice from './components/BuyDicePopup.svg.vue'
 import DiceRoller from './components/DiceRoller.svg.vue'
 import SquareButton from './components/SquareButton.svg.vue'
+import Notice from './components/Notice.svg.vue'
 import { web3dice } from './web3dice.js'
 import { store } from './store.js'
 </script>
@@ -98,9 +99,6 @@ export default {
           <text>but alas, I heard only silence.</text>
           <text transform="translate(0 50)">Check your wallet and reload this page.</text>
 
-          <g v-if="store.error" font-size="0.55em" fill="#ff8888">
-            <text transform="translate(0 150)">Note: {{ store.error }}</text>
-          </g>
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
         </g>
 
@@ -118,9 +116,6 @@ export default {
             <g transform="translate(0 70)">
               <square-button label="Connect It!" @click="connect()" />
             </g>
-          </g>
-          <g v-if="store.error" font-size="0.75em" fill="#ff8888">
-            <text transform="translate(0 150)">Note: {{ store.error }}</text>
           </g>
 
         </g>
@@ -151,6 +146,7 @@ export default {
           <about-screen :show="about" @close="closeAll()" />
 
         </g>
+        <notice />
       </g>
     </svg-container>
   </div>
