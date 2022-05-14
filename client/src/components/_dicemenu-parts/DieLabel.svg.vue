@@ -112,8 +112,8 @@ export default {
 
     <g v-if="diceId != null">
       <rect
-        x="-80" y="-15"
-        width="160" height="30"
+        x="-100" y="-15"
+        width="200" height="30"
         :fill="'#'+diceLabelBackground"
         stroke="#ffffff"
         fill-opacity="1"
@@ -123,7 +123,7 @@ export default {
       <text
         v-if="showRoll"
         text-anchor="end"
-        transform="translate(70 1)"
+        transform="translate(90 1)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"
@@ -132,7 +132,7 @@ export default {
       <text
         v-if="showRoll"
         text-anchor="start"
-        transform="translate(-70 0)"
+        transform="translate(-90 0)"
         :fill="'#'+diceLabelForground"
         stroke-width="0"
         font-weight="bold"

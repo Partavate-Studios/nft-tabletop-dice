@@ -33,7 +33,7 @@ export default {
   <g transform="translate(0 300)" stroke-opacity="0.25">
     <die-label
         v-if="store.selectedDice[0] != null"
-        transform="translate(-170 0) scale(1)"
+        transform="translate(-210 0) scale(1)"
         :diceId="store.selectedDice[0]"
         :showRoll="true"
     />
@@ -45,7 +45,7 @@ export default {
     />
     <die-label
         v-if="store.selectedDice[2] != null"
-        transform="translate(170 0) scale(1)"
+        transform="translate(210 0) scale(1)"
         :diceId="store.selectedDice[2]"
         :showRoll="true"
     />
