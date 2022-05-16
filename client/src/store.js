@@ -10,16 +10,19 @@ export const store = reactive({
     validNetwork: false,
     blockExplorer: null,
     openSea: null,
-    balance: 0
+    balance: 0,
+    weiPrice: 0,
+    price: 0
     //todo: one array of dice objects with roll and trait properties
   },
   diceLoaded: false,
   block: 0,
+  alert: null,
 
   //TODO: versioning should be automated
   version: {
-    client: "0.2.1",
-    contract: "0.2"
+    client: "0.2.8",
+    contract: "0.2.2"
   },
 
   ownedDice: [

@@ -1,7 +1,8 @@
 import { store } from './store.js'
-import { ethers } from "ethers"
+import { ethers, BigNumber } from "ethers"
 import Dice from '../../evm/artifacts/contracts/Dice.sol/TabletopDiceNFT.json'
 import Addresses from '../../evm/addresses/published-addresses.json'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 export const web3dice = {
   provider: null,
@@ -12,36 +13,31 @@ export const web3dice = {
 
   async init() {
     try {
-      this.provider = new ethers.providers.Web3Provider(window.ethereum, "any")
+      let provider = await detectEthereumProvider()
+      this.provider = new ethers.providers.Web3Provider(provider, "any")
     } catch (e) {
       console.log('Error: ' + e.message)
+      store.alert = e.message
       return
     }
     store.web3.hasWallet = true
+    console.log ('Wallet provider found.')
+
+    this.provider.on("network", (newNetwork, oldNetwork) => {
+      if (oldNetwork) {
+        console.log('Network change detected')
+        window.location.reload()
+      }
+    })
 
     try {
       store.web3.chain = await this.provider.getNetwork()
     } catch (e) {
       console.log('Error: ' + e.message)
+      store.alert = e.message
+      return
     }
-
-    this.provider.on("network", (newNetwork, oldNetwork) => {
-      console.log('network changed')
-      if (oldNetwork) {
-          window.location.reload()
-      }
-    })
-
-    this.provider.on("block", async (newNetwork, oldNetwork) => {
-      if (store.web3.activeAccount) {
-        let balance = await this.provider.getBalance(store.web3.activeAccount)
-        store.web3.balance = ethers.utils.formatEther(balance)
-      }
-    })
-
-    window.ethereum.on('accountsChanged', () => {
-      window.location.reload()
-    })
+    console.log ('EVM network found.')
 
     //Choose the contract address based on the chainId
     if (String(store.web3.chain.chainId) in Addresses) {
@@ -49,43 +45,11 @@ export const web3dice = {
       store.web3.validNetwork = true
       store.web3.blockExplorer = this.getBlockExplorerUrl()
       store.web3.openSea = this.getOpenSeaUrl()
+      console.log ('ChainID ' + store.web3.chain.chainId +' is a supprted network.')
     } else {
       console.log('no known contract address, is this a valid network?')
       return
     }
-
-
-    //todo - if we were going multichain, we would need to get the correct
-    //address for the contract based on which network is currently active
-    console.log ('Wallet provider found')
-    console.log('chain id: ', store.web3.chain.chainId)
-    //if (parseInt(store.web3.chain.chainId) == 80001) {
-      this.connect()
-    //}
-  },
-
-  getBlockExplorerUrl () {
-    //Polygon Mumbai Test Network
-    if (String(store.web3.chain.chainId) == '80001') {
-      return 'https://mumbai.polygonscan.com/address/' + this.diceContractAddress
-    }
-    //Polygon Main Net
-    if (String(store.web3.chain.chainId) == '137') {
-      return 'https://polygonscan.com/address/' + this.diceContractAddress
-    }
-    return null
-  },
-
-  getOpenSeaUrl () {
-    //Polygon Mumbai Test Network
-    if (String(store.web3.chain.chainId) == '80001') {
-      return 'https://testnets.opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
-    }
-    //Polygon Main Net
-    if (String(store.web3.chain.chainId) == '137') {
-      return 'https://opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
-    }
-    return null
   },
 
   async connect() {
@@ -93,23 +57,83 @@ export const web3dice = {
       store.web3.accounts = await this.provider.send("eth_requestAccounts", [])
     } catch(e) {
       console.log('Error: ' + e.message)
+      store.alert = e.message
       return
     }
-    this.signer = await this.provider.getSigner()
+    console.log('Account request accepted.')
+    await this.getSignerAndContract()
+  },
 
-    this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
-    console.log(await this.diceContract.address)
+  async getSignerAndContract() {
+    try {
+      this.signer = await this.provider.getSigner()
+      store.web3.activeAccount = await this.signer.getAddress()
+    } catch (e) {
+      console.log('Error: ' + e.message)
+      store.alert = e.message
+      return
+    }
+    console.log('Signer address found: ', store.web3.activeAccount)
+    await this.connectContract()
+    window.ethereum.on('accountsChanged', () => {
+      console.log('Account change detected')
+      window.location.reload()
+    })
+  },
 
-    this.signer.getAddress().then( async (address) => {
-      console.log('signer address found')
-      store.web3.activeAccount = address
+  async connectContract() {
+    try {
+      this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
+      this.dieContract
       this.diceContract.connect(this.signer)
-      this.getOwnedDice()
-      let balance = await this.provider.getBalance(store.web3.activeAccount)
-      store.web3.balance = ethers.utils.formatEther(balance)
+    } catch(e) {
+      console.log('Error: ' + e.message)
+      store.alert = e.message
+      return
+    }
+    console.log('Connected to contract: ', await this.diceContract.address)
+    await this.preloadDiceData()
       store.web3.isConnected = true
-    }, this)
+  },
 
+  async preloadDiceData() {
+    let balance = 0
+    try {
+      balance = await this.provider.getBalance(store.web3.activeAccount)
+    } catch (e) {
+      console.log('Error: ' + e.message)
+      store.alert = e.message
+      return
+    }
+    store.web3.balance = ethers.utils.formatEther(balance)
+    console.log('Initial balance: ', store.web3.balance)
+
+    try {
+      store.web3.weiPrice = await this.diceContract.getMintingCost()
+    } catch (e) {
+      console.log('Error: ' + e.message)
+      store.alert = e.message
+      return
+    }
+    store.web3.price = ethers.utils.formatEther(store.web3.weiPrice)
+    console.log('Current die cost: ' + store.web3.price + ' Matic each')
+
+    await this.getOwnedDice()
+
+    this.provider.on("block", async () => {
+      if (store.web3.isConnected) {
+        await this.refreshDiceData()
+      }
+    })
+  },
+
+  async refreshDiceData() {
+    let balance = await this.provider.getBalance(store.web3.activeAccount)
+    store.web3.balance = ethers.utils.formatEther(balance)
+
+    let weiPrice = await this.diceContract.getMintingCost()
+    store.web3.weiPrice = weiPrice
+    store.web3.price = ethers.utils.formatEther(weiPrice)
   },
 
   async switchNetwork() {
@@ -131,7 +155,7 @@ export const web3dice = {
             symbol: 'MATIC',
             decimals: 18
           },
-          rpcUrls: ['https://rpc-mumbai.maticvigil.com/'],
+          rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
           blockExplorerUrls: ['https://mumbai.polygonscan.com/']
         }]
         try {
@@ -140,7 +164,7 @@ export const web3dice = {
             params: data
           });
         } catch (error) {
-          alert('We were unable to add the network.')
+          store.alert = 'We were unable to add the network.'
         }
       }
     }
@@ -148,10 +172,10 @@ export const web3dice = {
 
   async delayedRoll(diceId) {
     let rollDelay = Math.floor(Math.random() * 20)
-    setTimeout(() => {this.getRoll(diceId)}, rollDelay)
+    setTimeout(() => {this.getRollFromContract(diceId)}, rollDelay)
   },
 
-  async getRoll(diceId) {
+  async getRollFromContract(diceId) {
     let nftId = store.ownedDice[diceId].nftId
     store.ownedDice[diceId].isRolling = true
     try {
@@ -170,24 +194,21 @@ export const web3dice = {
     }
   },
 
-  async getPriceForDice(qty) {
-    try {
-      let price = await this.diceContract.getMintingCost(qty)
-      return price
-    } catch (error) {
-      console.log("Error: ", error)
-    }
-    return 0
-  },
-
   async buyRandomDice(qty) {
-    let value = this.getPriceForDice(qty)
-    let gasLimit = 500_000 * qty
+    let price = BigNumber.from(store.web3.weiPrice).mul(qty)
+    let estimate = 0
+    try {
+      estimate = await this.diceContract.estimateGas.buyRandomDice(qty, {value: price})
+    } catch (e) {
+      console.log(e.message)
+    }
+    let lowerBound = (500_000 * qty)
+    let gasLimit = (estimate > lowerBound) ? estimate + 100_000 : lowerBound + 100_000
     try {
       const transaction = await this.diceContract.buyRandomDice(
         qty,
         {
-          value: value,
+          value: price,
           gasLimit: gasLimit
         }
       )
@@ -202,12 +223,12 @@ export const web3dice = {
   },
 
   async watchTransaction(transaction) {
+    store.alert = "Your dice order was submitted."
     const receipt = await transaction.wait()
-    this.getOwnedDice()
     if (receipt) {
-      alert ("You have new dice!")
+      store.alert = "Your new dice have arrived!"
     } else {
-      alert ("We regret to inform you that your dice purchase request failed.")
+      store.alert = "Regretfully, your dice purchase failed."
     }
   },
 
@@ -227,6 +248,7 @@ export const web3dice = {
       diceList  = await this.diceContract.tokenListOfOwner(store.web3.activeAccount)
     } catch (error) {
       console.log("Error: ", error)
+      return
     }
     console.log('Dice found, loading details: ', diceList)
     diceList.forEach(async (dieId, index) => {
@@ -235,6 +257,7 @@ export const web3dice = {
         store.addDie(this.makeDieObject(dieId, dieTraits))
       } catch (error) {
         console.log("Error: ", error)
+        return
       }
     }, this)
     console.log('Dice loaded, lets play!', typeof store.ownedDice)
@@ -260,6 +283,31 @@ export const web3dice = {
       lastRoll: Math.floor(Math.random() * traits.sides),
       isRolling: false
     }
-  }
+  },
+
+
+  getBlockExplorerUrl () {
+    //Polygon Mumbai Test Network
+    if (String(store.web3.chain.chainId) == '80001') {
+      return 'https://mumbai.polygonscan.com/address/' + this.diceContractAddress
+    }
+    //Polygon Main Net
+    if (String(store.web3.chain.chainId) == '137') {
+      return 'https://polygonscan.com/address/' + this.diceContractAddress
+    }
+    return null
+  },
+
+  getOpenSeaUrl () {
+    //Polygon Mumbai Test Network
+    if (String(store.web3.chain.chainId) == '80001') {
+      return 'https://testnets.opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+    }
+    //Polygon Main Net
+    if (String(store.web3.chain.chainId) == '137') {
+      return 'https://opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+    }
+    return null
+  },
 
 }

@@ -66,18 +66,6 @@ export default {
         this.ownedDiceIndex = diceId
       }
     },
-    async mintRandomDie() {
-      const dice = await web3dice.mintRandomDie()
-      if (dice) {
-        alert('New Dice!')
-      }
-    },
-    async mintRandomDice() {
-      const dice = await web3dice.buyRandomDice(20)
-      if (dice) {
-        alert('New Dice!')
-      }
-    },
     goLeft() {
       if (this.isMoreLeft) {
         this.ownedDiceIndex--
@@ -349,7 +337,7 @@ export default {
 
       <g transform="translate(0 20)">
         <square-button
-          :label="diceSelected ? 'Let\'s Play' : 'Close Menu'"
+          :label="diceSelected ? 'Let\'s Roll' : 'Close Menu'"
           :width="200"
           :height="80"
           btnstyle="pink"

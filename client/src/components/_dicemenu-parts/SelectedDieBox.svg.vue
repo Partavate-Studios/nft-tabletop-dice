@@ -80,7 +80,7 @@ export default {
         :transform="dieTransform"
         :diceid="diceId"
       />
-      <g transform="translate(0 150)" :stroke-opacity="strokeOpacity">
+      <g transform="translate(0 180)" :stroke-opacity="strokeOpacity">
         <die-label :diceId="diceId" />
       </g>
     </g>

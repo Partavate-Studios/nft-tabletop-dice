@@ -5,7 +5,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "hardhat/console.sol";
 
 import "./DiceLibrary.sol";
 import "./ERC721SimpleEnumerable.sol";
@@ -18,7 +17,8 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
     using RandomNameLibrary for RandomNameLibrary.WordStorage;
 
     uint256 pricePerDie = 0.173 ether;
-    uint256 constant maxDicePerTransaction = 5;
+
+    uint256 constant maxDicePerTransaction = 7;
     address payable accountsRecievable;
 
     Counters.Counter private _tokenIds;
@@ -29,7 +29,7 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
 
     constructor(string[] memory adjectives, string[] memory nouns)
         ERC721(string(abi.encodePacked("PolyDice dApp v", version)), "PolyDice") {
-        _baseURIvalue = "https://dice.partavate.com";
+        _baseURIvalue = "https://polydice.app";
         accountsRecievable = payable(msg.sender);
         addWords(adjectives, nouns);
         diceLib.possibleSides.push(6);
@@ -130,10 +130,6 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return (string(abi.encodePacked(_baseURIvalue, diceLib.getTokenURIpath(tokenId))));
     }
 
-    function getMintingCost(uint8 qty) public view returns (uint256 cost) {
-        return pricePerDie * uint256(qty);
-    }
-
     function getOwnedTokenIds() public view returns (uint256[] memory) {
         uint256 ownedCnt = balanceOf(msg.sender);
         uint256[] memory tokenIds = new uint256[](ownedCnt);
@@ -160,8 +156,13 @@ contract TabletopDiceNFT is Ownable, Version, ERC721SimpleEnumerable {
         return diceLib.getTraits(tokenId);
     }
 
+    function getMintingCost() public view returns (uint256 cost) {
+        return pricePerDie;
+    }
+
     function buyRandomDice(uint8 count) public payable {
-        require((msg.value >= getMintingCost(count)), "not enough cash");
+        require((msg.value >= pricePerDie * count),
+        "not enough cash");
         for(uint i=0; i < count; i++) {
             _mintRandomDie(msg.sender);
         }

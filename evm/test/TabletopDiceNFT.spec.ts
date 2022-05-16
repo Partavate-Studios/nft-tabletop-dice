@@ -163,10 +163,9 @@ describe("TabletopDiceNFT", () => {
   describe("setPrice", () => {
     it("checks if price setting works", async () => {
       let price = 1000;
-      let qty = 3;
       await deployedContract.setDiePrice(price);
-      let cost = await deployedContract.getMintingCost(qty);
-      expect(cost).to.eq(price * qty);
+      let cost = await deployedContract.getMintingCost();
+      expect(cost).to.eq(price);
     });
   });
 

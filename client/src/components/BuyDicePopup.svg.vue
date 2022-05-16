@@ -3,7 +3,6 @@ import DotButtonAdd from './_dicemenu-parts/DotButtonAdd.svg.vue'
 import DotButtonMinus from './_dicemenu-parts/DotButtonMinus.svg.vue'
 import SquareButton from './SquareButton.svg.vue'
 import { web3dice } from '../web3dice.js'
-import { ethers } from "ethers"
 import {store } from '../store.js'
 </script>
 <script>
@@ -19,12 +18,8 @@ export default {
     return {
       store,
       qty: 1,
-      price: 0,
       maxBuy: 5
     }
-  },
-  mounted () {
-    this.loadPrice();
   },
   methods: {
     close() {
@@ -33,19 +28,12 @@ export default {
     increase() {
       if (this.canIncrease) {
         this.qty++
-        this.loadPrice()
       }
     },
     decrease() {
       if (this.canDecrease) {
         this.qty--
-        this.loadPrice()
       }
-    },
-    async loadPrice() {
-        this.price = 0
-        let weiPrice = await web3dice.getPriceForDice(this.qty)
-        this.price = ethers.utils.formatEther(weiPrice)
     },
     async checkout() {
       await web3dice.buyRandomDice(this.qty)
@@ -60,10 +48,14 @@ export default {
       return this.qty > 1
     },
     canAfford() {
-      if ((this.price == 0) || (this.price > store.web3.balance)) {
+      if ((store.web3.price == 0) ||
+          (this.price > store.web3.balance)) {
         return false
       }
       return true
+    },
+    price() {
+      return store.web3.price * this.qty
     }
   }
 }
@@ -86,8 +78,8 @@ export default {
             <text v-if="qty == 1">1 Die</text>
             <text v-else>{{ qty }} Dice</text>
         </g>
-        <text font-size="0.5em" transform="translate(0 0)" v-if="price > 0">Current Estimated Price: {{ price }} Matic</text>
-        <text font-size="0.5em" transform="translate(0 0)" v-else>Fetching latest price...</text>
+        <text font-size="0.5em" transform="translate(0 0)" v-if="price > 0">Current Estimated Price: ~{{ price.toFixed(4) }} Matic</text>
+        <text font-size="0.5em" transform="translate(0 0)" v-else>Fetching price...</text>
         <text font-size="0.5em" transform="translate(0 20)">(not including network fees)</text>
         <g transform="translate(-120 -65)" v-if="canDecrease">
             <dot-button-minus @click="decrease()" />
@@ -106,7 +98,7 @@ export default {
         </g>
         <g transform="translate(110 100)">
           <g v-if="price == 0">
-            <text font-size="0.6em">Calculating</text>
+            <text font-size="0.6em">Fetching Price</text>
           </g>
           <g v-else-if="canAfford">
             <square-button
