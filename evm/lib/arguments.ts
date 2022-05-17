@@ -7,9 +7,12 @@ const constructorArgs = [
      "Dayside","Nightside","Galactic","Freedom",
      "Empirical","Glowing","Charred","Frozen","Broken",
      "Shattered","Bit","Dungeon","Knight","Dragon",
-     "Devil","Goblin","Mage","God","Goddess","Midnight",
+     "Devil","Goblin","Mage","God","Goddess","Royal",
+     "Anointed","Exalted","Foretold","Iridescent",
+     "Plebian","Patrician","Midnight",
      "Damaged","Perfect","Speedster","Telekinetic",
-     "Telepathic","Crystalized","Wireframe","Ice Forged",
+     "Telepathic","Anodized","Cryogenic","Crystalized","Covalent",
+     "Ionic","Oxidized","Wireframe","Ice Forged", "Radioactive",
      "Machined","Unstable","Balanced","Rogue","Pilot",
      "Mother","Father","Baldur","Borr","Bragi","Búri",
      "Dagur","Delling","Eir","Ēostre","Elli","Forseti",
@@ -21,14 +24,15 @@ const constructorArgs = [
      "Snotra","Sol","Thor","Thruer","Týr","Ullr","Váli",
      "Vár","Vé","Víðarr","Vör","Yggdrasil","Wealthy",
      "Regular","Average","Super","Meta","Inhuman","Mutant",
-     "Alien","Garbage","Cobbled","Mastercrafted","Silent",
-     "Sonic","Sorcerer","Edible","Poisonous","Cracked",
+     "Alien","Artisinal","Garbage","Cobbled","Mastercrafted","Silent",
+     "Sonic","Sorcerer","Edible","Poisonous","Venomous","Cracked",
      "Infested","Prosperous","Exploding","Accurate",
      "Maiden","Thief","Treasured","Lost","Secret","Deluxe",
-     "Salvaged","Restored","Hand-Crafted","Naked","Spawned",
-     "Assassin","Force","Intelligent"],
+     "Salvaged","Restored","Hand-Crafted","Naked","Retrograde",
+     "Spawned","Vintage","Assassin","Force","Intelligent", 
+     "Chaotic", "Neutral", "Lawful"],
 
-    ["Helium","Lithium","Beryllium","Boron","Carbon","Nitrogen",
+    ["Hydrogen","Helium","Lithium","Beryllium","Boron","Carbon","Nitrogen",
      "Oxygen","Fluorine","Neon","Sodium","Magnesium","Aluminium",
      "Silicon","Phosphorus","Sulfur","Chlorine","Argon","Potassium",
      "Calcium","Scandium","Titanium","Vanadium","Chromium","Manganese",
@@ -47,25 +51,12 @@ const constructorArgs = [
      "Mendelevium","Nobelium","Lawrencium","Rutherfordium","Dubnium",
      "Seaborgium","Bohrium","Hassium","Meitnerium","Darmstadtium",
      "Roentgenium","Copernicium","Nihonium","Flerovium","Moscovium",
-     "Livermorium","Tennessine","Oganesson","Pine","Redwood","Ash","Birch",
-     "Oak","Fir","Spruce","Cherry","Mahogany","Aether","Adamite",
-     "Bureaucratium","Dust","Kyber","Netherite"]
-
-
-
-   /*
-    //adjectives
-    ["Snake","Hicks","Railroad","Jack","Benny","Puppy","Six","Gear","Hustle","Hipster",
-   "Phoebe","Jake","Red","Easy","North","East","South","West","Fever","Square",
-   "Holding","Damage","Dungeon","Yo","Brooklyn","Little","Metal","Iron","Ace",
-   "Bigfoot","Down","Up","Rodeo","Paladin","Mage","Devil","Goddess","Hack","Midnight"],
-    // nouns
-    ["Snake","Hicks","Railroad","Jack","Benny","Puppy","Six","Gear","Hustle","Hipster",
-   "Phoebe","Jake","Red","Easy","North","East","South","West","Fever","Square",
-   "Holding","Damage","Dungeon","Yo","Brooklyn","Little","Metal","Iron","Ace",
-   "Bigfoot","Down","Up","Rodeo","Paladin","Mage","Devil","Goddess","Hack","Midnight",
-   "🎲","💥","🦍","🐻","🐅","🦂","🐉","🏦","🪐","🚀","🏹" ]
-  */
+     "Livermorium","Tennessine","Oganesson","Pine","Redwood","Ash","Aspen",
+     "Birch","Oak","Fir","Spruce","Cherry","Currant","Mahogany","Wormwood",
+     "Aether","Adamite","Bureaucratium","Unobtainium","Dust","Kyber",
+     "Netherite","Lapis Lazuli","Meteorite","Obsidian","Suevite","Tektite",
+     "Chupacabra","Ogopogo","Snake","Sasquatch","Thunderbird","Yeti",
+     "Good","Neutral","Evil"]
 ];
 
 export default constructorArgs;
