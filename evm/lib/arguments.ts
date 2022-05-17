@@ -24,7 +24,7 @@ const constructorArgs = [
      "Snotra","Sol","Thor","Thruer","Týr","Ullr","Váli",
      "Vár","Vé","Víðarr","Vör","Yggdrasil","Wealthy",
      "Regular","Average","Super","Meta","Inhuman","Mutant",
-     "Alien","Artisinal","Garbage","Cobbled","Mastercrafted","Silent",
+     "Alien","Artisanal","Garbage","Cobbled","Mastercrafted","Silent",
      "Sonic","Sorcerer","Edible","Poisonous","Venomous","Cracked",
      "Infested","Prosperous","Exploding","Accurate",
      "Maiden","Thief","Treasured","Lost","Secret","Deluxe",
