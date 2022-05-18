@@ -10,7 +10,7 @@ spec:
     - websecure
   routes:
     # Partavate.com
-    - match: Host(`dice.partavate.com`)
+    - match: Host(`polydice.app`) || Host(`dice.partavate.com`)
       kind: Rule
       services:
         - name: polydice-client
