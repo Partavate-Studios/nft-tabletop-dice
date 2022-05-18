@@ -137,26 +137,24 @@ export const web3dice = {
   },
 
   async switchNetwork() {
-    //Todo: this will need to be smarter when we
-    //release to polygon.
-    const chainId = '0x13881'
+    const chainId = '0x89'
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: chainId }]
       });
     } catch (error) {
-      if (confirm('Chain not found in your wallet. Would you like us to try to add it?')) {
+      if (confirm('Polygon Mainnet was not found in your wallet. Would you like us to try to add it?')) {
         let data = [{
           chainId: chainId,
-          chainName: 'Polygon Testnet',
+          chainName: 'Polygon Mainnet',
           nativeCurrency: {
             name: 'MATIC',
             symbol: 'MATIC',
             decimals: 18
           },
-          rpcUrls: ['https://matic-mumbai.chainstacklabs.com/'],
-          blockExplorerUrls: ['https://mumbai.polygonscan.com/']
+          rpcUrls: ['https://polygon-rpc.com'],
+          blockExplorerUrls: ['https://polygonscan.com/']
         }]
         try {
           await window.ethereum.request({
@@ -227,6 +225,7 @@ export const web3dice = {
     const receipt = await transaction.wait()
     if (receipt) {
       store.alert = "Your new dice have arrived!"
+      this.getOwnedDice()
     } else {
       store.alert = "Regretfully, your dice purchase failed."
     }

@@ -104,9 +104,9 @@ export default {
 
         <g v-else-if="!store.web3.isConnected">
           <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
-          <text transform="translate(0 -50)">You are on the {{ chainName }} network.</text>
+          <text transform="translate(0 -50)">You are on the <tspan style="text-transform: capitalize">{{ chainName }}</tspan> network.</text>
           <g v-if="!store.web3.validNetwork">
-            <text>Please switch to Polygon Mumbai</text>
+            <text>Please switch to the Polygon Network (aka Matic)</text>
             <g transform="translate(0 70)">
               <square-button label="Switch Network" @click="switchNetwork()" />
             </g>
