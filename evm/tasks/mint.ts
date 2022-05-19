@@ -8,16 +8,16 @@ import { getContract } from "../lib/contract";
 task("mint-die", "Mint Dice NFT")
   .addParam("owner", "Who will own the NFT", env("ETH_PUBLIC_KEY"), types.string)
   .addParam("name", "The Name of the Die NFT", "Default 🎲", types.string)
-  .addParam("sides", "The Number of Faces", 20, types.int)
-  .addParam("styleId", "The Style Number (0-30)", 0, types.int)
-  .addParam("font", "The Font Id", 1, types.int)
+  .addParam("sides", "The Number of Faces", 20, types.string)
+  .addParam("styleid", "The Style Number (0-30)", 0, types.string)
+  .addParam("font", "The Font Id", 1, types.string)
   .setAction(async (taskArgs, hre) => {
     return getContract("TabletopDiceNFT", hre)
       .then((contract: Contract) => {
         const result = contract.mintDie(
           taskArgs.name,
           taskArgs.sides,
-          taskArgs.styleId,
+          taskArgs.styleid,
           taskArgs.font,
           taskArgs.owner,
           { gasLimit: 500_000 }
