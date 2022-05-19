@@ -4,10 +4,10 @@ export const store = reactive({
   web3: {
     hasWallet: false,
     isConnected: false,
+    validNetwork: false,
     chain: null,
     accounts: null,
     activeAccount: null,
-    validNetwork: false,
     blockExplorer: null,
     openSea: null,
     balance: 0,
@@ -21,7 +21,7 @@ export const store = reactive({
 
   //TODO: versioning should be automated
   version: {
-    client: "0.3",
+    client: "0.3.1",
     contract: "1.0"
   },
 

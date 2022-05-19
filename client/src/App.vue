@@ -31,6 +31,12 @@ export default {
       }
       return 'no chain found'
     },
+    chainFound() {
+      if ( store.web3.chain != null) {
+        return true
+      }
+      return false
+    },
     diceSelected() {
       if(store.selectedDice[0] != null) {
         return true
@@ -89,36 +95,37 @@ export default {
 
         <polydice-logo-button transform="translate(-240 -420) scale(1.1)" @click="openAbout()" />
 
+        <g v-if="!chainFound">
+          <polygon-logo transform="scale(10) translate(0 32)" opacity="0.1" />
+        </g>
 
         <g font-size="0.5em" fill="#ffffff" fill-opacity="0.25" stroke="0" transform="translate(0 500)">
           <text>Client version: {{ store.version.client }} Contract version: {{ store.version.contract }}</text>
         </g>
 
         <g v-if="!store.web3.hasWallet">
-          <text transform="translate(0 -50)">I called out to your Web3 wallet provider;</text>
-          <text>but alas, I heard only silence.</text>
+          <text fill="#aaaaaa" transform="translate(0 -50)">I called out to your Web3 wallet provider;</text>
+          <text fill="#aaaaaa" >but alas, I heard only silence...</text>
           <text transform="translate(0 50)">Check your wallet and reload this page.</text>
 
-          <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
         </g>
 
         <g v-else-if="!store.web3.isConnected">
-          <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
-          <text transform="translate(0 -50)">You are on the <tspan style="text-transform: capitalize">{{ chainName }}</tspan> network.</text>
-          <g v-if="!store.web3.validNetwork">
+          <g transform="translate(0 70)" fill="#aaccff">
+            <square-button label="Connect It!" @click="connect()" />
+          </g>
+        </g>
+
+        <g v-else-if="!store.web3.validNetwork">
+          <g v-if="chainFound">
+            <text fill="#aaaaaa"  transform="translate(0 -50)">You are on the <tspan style="text-transform: capitalize">{{ chainName }}</tspan> network.</text>
             <text>Please switch to the Polygon Network (aka Matic)</text>
-            <g transform="translate(0 70)">
+            <g transform="translate(0 110)" fill="#ccaaff">
               <square-button label="Switch Network" @click="switchNetwork()" />
             </g>
           </g>
-          <g v-else>
-            <text>Let's connect your account!</text>
-            <g transform="translate(0 70)">
-              <square-button label="Connect It!" @click="connect()" />
-            </g>
-          </g>
-
         </g>
+
 
         <g v-else>
 

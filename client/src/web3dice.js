@@ -11,114 +11,108 @@ export const web3dice = {
 
   diceContractAddress: null,
 
+  log(msg) {
+    console.log ('Message: ', msg)
+    store.alert = msg
+  },
+
   async init() {
     try {
       let provider = await detectEthereumProvider()
       this.provider = new ethers.providers.Web3Provider(provider, "any")
     } catch (e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
+      this.log(e.message)
       return
     }
+
+
     store.web3.hasWallet = true
-    console.log ('Wallet provider found.')
-
-    this.provider.on("network", (newNetwork, oldNetwork) => {
-      if (oldNetwork) {
-        console.log('Network change detected')
-        window.location.reload()
-      }
-    })
-
-    try {
-      store.web3.chain = await this.provider.getNetwork()
-    } catch (e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
-      return
-    }
-    console.log ('EVM network found.')
-
-    //Choose the contract address based on the chainId
-    if (String(store.web3.chain.chainId) in Addresses) {
-      this.diceContractAddress = Addresses[store.web3.chain.chainId]
-      store.web3.validNetwork = true
-      store.web3.blockExplorer = this.getBlockExplorerUrl()
-      store.web3.openSea = this.getOpenSeaUrl()
-      console.log ('ChainID ' + store.web3.chain.chainId +' is a supprted network.')
-    } else {
-      console.log('no known contract address, is this a valid network?')
-      return
-    }
+    console.log ('Wallet provider discovered.')
   },
 
   async connect() {
     try {
       store.web3.accounts = await this.provider.send("eth_requestAccounts", [])
     } catch(e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
+      this.log(e.message)
       return
     }
-    console.log('Account request accepted.')
-    await this.getSignerAndContract()
+    console.log ('Wallet connected.')
+
+    await this.getSigner()
+
+    window.ethereum.on('accountsChanged', async () => {
+      location.reload()
+    })
+    window.ethereum.on('disconnect', async () => {
+      location.reload()
+    })
+
+    await this.getChainData()
+
+    window.ethereum.on('chainChanged', async () => {
+      location.reload()
+    })
   },
 
-  async getSignerAndContract() {
+
+  async getSigner() {
+    store.web3.isConnected = false
     try {
       this.signer = await this.provider.getSigner()
       store.web3.activeAccount = await this.signer.getAddress()
     } catch (e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
+      this.log(e.message)
       return
     }
+    store.web3.isConnected = true
     console.log('Signer address found: ', store.web3.activeAccount)
-    await this.connectContract()
-    window.ethereum.on('accountsChanged', () => {
-      console.log('Account change detected')
-      window.location.reload()
-    })
   },
 
-  async connectContract() {
+  async getChainData() {
+    store.web3.validNetwork = false
+    try {
+      store.web3.chain = await this.provider.getNetwork()
+    } catch (e) {
+      this.log(e.message)
+      return
+    }
+    console.log ('Compatible EVM network discovered.')
+
+
+    //Choose the contract address based on the chainId
+    if (String(store.web3.chain.chainId) in Addresses) {
+      this.diceContractAddress = Addresses[store.web3.chain.chainId]
+      console.log ('ChainID ' + store.web3.chain.chainId +' is a supprted network.')
+    } else {
+      console.log('no known contract address, is this a valid network?')
+      return
+    }
+    store.web3.validNetwork = true
+
     try {
       this.diceContract = new ethers.Contract(this.diceContractAddress, Dice.abi, this.signer)
       this.dieContract
       this.diceContract.connect(this.signer)
     } catch(e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
+      this.log(e.message)
       return
     }
     console.log('Connected to contract: ', await this.diceContract.address)
+
+    store.web3.blockExplorer = this.getBlockExplorerUrl()
+    store.web3.openSea = this.getOpenSeaUrl()
     await this.preloadDiceData()
-      store.web3.isConnected = true
   },
 
   async preloadDiceData() {
-    let balance = 0
     try {
-      balance = await this.provider.getBalance(store.web3.activeAccount)
+      await this.refreshDiceData()
+      await this.getOwnedDice()
     } catch (e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
+      this.log(e.message)
       return
     }
-    store.web3.balance = ethers.utils.formatEther(balance)
-    console.log('Initial balance: ', store.web3.balance)
-
-    try {
-      store.web3.weiPrice = await this.diceContract.getMintingCost()
-    } catch (e) {
-      console.log('Error: ' + e.message)
-      store.alert = e.message
-      return
-    }
-    store.web3.price = ethers.utils.formatEther(store.web3.weiPrice)
-    console.log('Current die cost: ' + store.web3.price + ' Matic each')
-
-    await this.getOwnedDice()
 
     this.provider.on("block", async () => {
       if (store.web3.isConnected) {
@@ -130,10 +124,12 @@ export const web3dice = {
   async refreshDiceData() {
     let balance = await this.provider.getBalance(store.web3.activeAccount)
     store.web3.balance = ethers.utils.formatEther(balance)
+    console.log('Balance: ', store.web3.balance)
 
     let weiPrice = await this.diceContract.getMintingCost()
     store.web3.weiPrice = weiPrice
     store.web3.price = ethers.utils.formatEther(weiPrice)
+    console.log('Current die cost: ' + store.web3.price + ' Matic each')
   },
 
   async switchNetwork() {
@@ -143,8 +139,9 @@ export const web3dice = {
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: chainId }]
       });
-    } catch (error) {
-      if (confirm('Polygon Mainnet was not found in your wallet. Would you like us to try to add it?')) {
+    } catch (e) {
+      console.log('Error requesting network.', e.message)
+      if (confirm('Polygon Mainnet was not found. Would you like us to try to add it?')) {
         let data = [{
           chainId: chainId,
           chainName: 'Polygon Mainnet',
@@ -161,7 +158,8 @@ export const web3dice = {
             method: 'wallet_addEthereumChain',
             params: data
           });
-        } catch (error) {
+        } catch (e) {
+          console.log('Error requesting network.', e.message)
           store.alert = 'We were unable to add the network.'
         }
       }
@@ -185,8 +183,8 @@ export const web3dice = {
         console.log("Roll for #" + store.ownedDice[diceId].name + ": ", roll)
       }, 1000)
       return roll
-    } catch (error) {
-      console.log("Error: ", error)
+    } catch (e) {
+      this.log("Error: ", e.message)
       store.ownedDice[diceId].isRolling = false
       return 'failed'
     }
@@ -198,7 +196,8 @@ export const web3dice = {
     try {
       estimate = await this.diceContract.estimateGas.buyRandomDice(qty, {value: price})
     } catch (e) {
-      console.log(e.message)
+      this.log(e.message)
+      return
     }
     let lowerBound = (500_000 * qty)
     let gasLimit = (estimate > lowerBound) ? estimate + 100_000 : lowerBound + 100_000
@@ -212,10 +211,10 @@ export const web3dice = {
       )
       this.watchTransaction(transaction)
       console.log('Waiting on purchase transacton: ' + transaction)
-      console.log('Minted new dice: ', qty)
+      this.log('Minting ' + qty +  'new dice: ')
       return true
     } catch (error) {
-      console.log("Error: ", error)
+      this.log("Error: ", error)
     }
     return false
   },
@@ -224,29 +223,20 @@ export const web3dice = {
     store.alert = "Your dice order was submitted."
     const receipt = await transaction.wait()
     if (receipt) {
-      store.alert = "Your new dice have arrived!"
+      this.log("Your new dice have arrived!")
       this.getOwnedDice()
     } else {
-      store.alert = "Regretfully, your dice purchase failed."
+      this.log("Regretfully, your dice minting failed.")
     }
-  },
-
-  async mintRandomDie() {
-    try {
-      await this.diceContract.mintRandomDie()
-      return true
-    } catch (error) {
-      console.log("Error: ", error)
-    }
-    return false
   },
 
   async getOwnedDice() {
     let diceList = []
     try {
       diceList  = await this.diceContract.tokenListOfOwner(store.web3.activeAccount)
-    } catch (error) {
-      console.log("Error: ", error)
+    } catch (e) {
+      this.log('Error loading your dice.')
+      console.log("Error: ", e.message)
       return
     }
     console.log('Dice found, loading details: ', diceList)
@@ -254,8 +244,8 @@ export const web3dice = {
       try {
         let dieTraits = await this.getTraits(dieId)
         store.addDie(this.makeDieObject(dieId, dieTraits))
-      } catch (error) {
-        console.log("Error: ", error)
+      } catch (e) {
+        console.log("Error: ", e.message)
         return
       }
     }, this)
@@ -279,7 +269,7 @@ export const web3dice = {
       fgColor: traits.fgColor,
       bgColor: traits.bgColor,
       font: traits.font,
-      lastRoll: Math.floor(Math.random() * traits.sides),
+      lastRoll: diceId % traits.sides + 1,
       isRolling: false
     }
   },
