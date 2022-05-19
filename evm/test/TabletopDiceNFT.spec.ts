@@ -108,7 +108,7 @@ describe("TabletopDiceNFT", () => {
       let sides = 20;
       let font = 1;
       let tokenURIexpected =
-        `https://dice.partavate.com/metadata/${name}/${sides}/${fgColor}/${bgColor}/${font}`;
+        `https://polydice.app/metadata/${name}/${sides}/${fgColor}/${bgColor}/${font}`;
 
       await deployedContract.mintDie(
         name,

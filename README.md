@@ -2,7 +2,7 @@
 
 # PolyDice
 
-[dice.partavate.com](https://dice.partavate.com)
+[dice.partavate.com](https://polydice.app)
 
 ## NFT Tabletop Dice
 NFT Tabletop Dice are dice both a dice rolling dApp for tabletop gamers and collectable ERC721 NFTs. Dice you can roll and dice you can own.
@@ -58,7 +58,7 @@ export KUBECONFIG=$HOME/.kube/linode
 
 1. Update the image tag in `deployment/polydice-deployment.yaml`
 2. Publish the updated deployment:
- 
+
 ```
 kubectl apply -f deployment/polydice-deployment.yaml
 ```
@@ -88,6 +88,6 @@ kubectl apply -f deployment/polydice-deployment.yaml
 kubectl apply -f deployment/polydice-ingressroute.yaml
 ```
 
-Traefik should configure a new router to [https://dice.partavate.com](https://dice.partavate.com).
+Traefik should configure a new router to [https://polydice.app](https://polydice.app).
 
 Verify by checking [https://traefik.partavate.com/dashboard/#/http/routers](https://traefik.partavate.com/dashboard/#/http/routers)

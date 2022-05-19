@@ -1,14 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" 
-  xml:space="preserve" 
-  width="512px" height="512px" 
-  version="1.1" 
+<svg xmlns="http://www.w3.org/2000/svg"
+  xml:space="preserve"
+  width="512px" height="512px"
+  version="1.1"
   shape-rendering="geometricPrecision"
   text-rendering="geometricPrecision"
   image-rendering="optimizeQuality"
   fill-rule="evenodd"
   clip-rule="evenodd"
   viewBox="0 0 512 512" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs> 
+  <defs>
     <linearGradient id="background" gradientTransform="rotate(90)">
       <stop offset="25%" stop-color="#160a1e" stop-opacity="1" />
       <stop offset="110%" stop-color="#1f1f66" stop-opacity="1" />
@@ -59,10 +59,10 @@
     </filter>
 
     </defs>
-  <a href="https://dice.partavate.com">
+  <a href="https://polydice.app">
     <g>
       <rect x="-100" y="-100" width="700" height="700" fill="url(#background)" />
-      <g transform="translate(256 256) scale(2)">    
+      <g transform="translate(256 256) scale(2)">
         <ellipse cx="0" cy="60" rx="60" ry="10" fill="#000000" opacity="0.25" stroke-width="0" />
         <ellipse cx="0" cy="60" rx="80" ry="15" fill="#000000" opacity="0.25" stroke-width="0" />
 
@@ -70,7 +70,7 @@
           <g transform="translate(6.8425866)">
             <g transform="matrix(0.8848427,0,0,0.8848427,-121.68522,-996.56319)">
               <g transform="translate(-133.05843,103.20823)">
-                <path 
+                <path
                    fill="#000000"
                    fill-opacity="1"
                    stroke-width="0.264583"
@@ -102,7 +102,7 @@
                  opacity="0.8"
                  transform="matrix(0.78587174,0,0,0.78587174,-168.35229,1458.67)" />
             </g>
-          </g>         
+          </g>
         </g>
 
         <?php // Font Groups -- Supports font 0 (pixels), font 1 (arabian) ?>
