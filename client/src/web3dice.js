@@ -304,7 +304,7 @@ export const web3dice = {
     }
     //Polygon Main Net
     if (String(store.web3.chain.chainId) == '137') {
-      return 'https://opensea.io/assets?search%5Bquery%5D=' + this.diceContractAddress
+      return 'https://opensea.io/collection/polydice'
     }
     return null
   },

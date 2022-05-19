@@ -11,4 +11,3 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
     console.log(`Balance: ${hre.ethers.utils.formatEther(await accounts[i].getBalance())} (ETH)`);
   }
 });
-
