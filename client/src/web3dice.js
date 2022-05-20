@@ -2,7 +2,6 @@ import { store } from './store.js'
 import { ethers, BigNumber } from "ethers"
 import Dice from '../../evm/artifacts/contracts/Dice.sol/TabletopDiceNFT.json'
 import Addresses from '../../evm/addresses/published-addresses.json'
-import detectEthereumProvider from '@metamask/detect-provider'
 
 export const web3dice = {
   provider: null,
@@ -18,10 +17,10 @@ export const web3dice = {
 
   async init() {
     try {
-      let provider = await detectEthereumProvider()
-      this.provider = new ethers.providers.Web3Provider(provider, "any")
+      this.provider = new ethers.providers.Web3Provider(window.ethereum, "any")
     } catch (e) {
-      this.log(e.message)
+      this.log('No wallet found.')
+      console.log(e.message)
       return
     }
 

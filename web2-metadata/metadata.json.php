@@ -20,7 +20,7 @@ else
 
     $metadata = [
         "name" => $urlParts[2],
-        "description" => "PolyDice: Dice for Tabletop Gaming, an EthDenver 2022 #BUIDLthon Entry",
+        "description" => "PolyDice: Dice You Own. Dice You Roll.",
         "external_url" => "https://polydice.app/",
         // /metadata/die.{size}.{background}.{foreground}.{font}.svg
         "image" => "https://polydice.app/metadata/die.$urlParts[3].$urlParts[4].$urlParts[5].$urlParts[6].svg",

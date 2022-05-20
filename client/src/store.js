@@ -21,7 +21,7 @@ export const store = reactive({
 
   //TODO: versioning should be automated
   version: {
-    client: "0.3.1",
+    client: "0.3.2",
     contract: "1.0"
   },
 
