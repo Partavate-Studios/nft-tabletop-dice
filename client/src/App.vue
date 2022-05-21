@@ -145,14 +145,14 @@ export default {
               @click="openMenu()" />
           </g>
 
-          <g v-if="menuIsOpen">
-            <rect x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="closeAll()" />
-          </g>
-          <dice-menu :show="menu" @close="closeAll()" @buydice="openBuyDice()" />
-          <buy-dice :show="buyDice" @close="closeAll()" />
-          <about-screen :show="about" @close="closeAll()" />
 
         </g>
+        <g v-if="menuIsOpen">
+          <rect x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="closeAll()" />
+        </g>
+        <dice-menu :show="menu" @close="closeAll()" @buydice="openBuyDice()" />
+        <buy-dice :show="buyDice" @close="closeAll()" />
+        <about-screen :show="about" @close="closeAll()" />
         <notice />
       </g>
     </svg-container>
