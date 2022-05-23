@@ -57,7 +57,7 @@ export default {
       return store.ownedDice[this.diceid].isRolling
     },
     value () {
-      if (store.ownedDice[this.diceid].lastRoll) {
+      if (store.ownedDice[this.diceid].lastRoll != null) {
         return parseInt(store.ownedDice[this.diceid].lastRoll)
       }
       return (this.diceid % this.sides + 1)

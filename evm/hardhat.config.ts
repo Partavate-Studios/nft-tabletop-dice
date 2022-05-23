@@ -12,6 +12,7 @@ import("./tasks/deploy");
 import("./tasks/mint");
 import("./tasks/roll");
 import("./tasks/verify");
+import("./tasks/setAccountsRecievable");
 
 import { HardhatUserConfig } from "hardhat/config";
 
@@ -67,6 +68,7 @@ const config: HardhatUserConfig = {
     apiKey: {
       rinkeby: process.env.ETHERSCAN_API_KEY,
       polygonMumbai: process.env.POLYSCAN_API_KEY,
+      polygon: process.env.POLYSCAN_API_KEY,
     }
   }
 };

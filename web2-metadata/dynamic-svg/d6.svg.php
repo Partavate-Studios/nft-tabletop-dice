@@ -17,7 +17,7 @@
       <stop stop-color="#666666" stop-opacity="1" offset="100%"></stop>
     </linearGradient>
   </defs>
-  <a href="https://dice.partavate.com">
+  <a href="https://polydice.app">
     <g>
       <rect x="-100" y="-100" width="700" height="700" fill="url(#background)" />
       <g transform="translate(256 256) scale(2)">
@@ -95,7 +95,7 @@
             <stop offset="100%" stop-color="#000000" stop-opacity="0"></stop>
           </radialGradient>
         </defs>
-        <g>    
+        <g>
           <ellipse cx="0" cy="60" rx="80" ry="10" fill="url('#dieshadow')" opacity="0.25" stroke-width="0" />
           <ellipse cx="0" cy="60" rx="100" ry="15" fill="url('#dieshadow')" opacity="0.25" stroke-width="0" />
       </g>

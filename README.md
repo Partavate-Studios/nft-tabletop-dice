@@ -2,7 +2,7 @@
 
 # PolyDice
 
-[dice.partavate.com](https://dice.partavate.com)
+[dice.partavate.com](https://polydice.app)
 
 ## NFT Tabletop Dice
 NFT Tabletop Dice are dice both a dice rolling dApp for tabletop gamers and collectable ERC721 NFTs. Dice you can roll and dice you can own.
@@ -39,10 +39,9 @@ This will update `evm/addresses/published-addresses.json`, allowing client build
 
 This deploys changes to the **client only**. Contract changes must be deployed to their chains using Hardhat.
 
-Build the Docker image, from inside `./client`
+Build the Docker image, from inside `./`
 
 ```
-cd client
 docker login registry.gitlab.com
 docker build -t registry.gitlab.com/partavate/nft-dice-roller/client:0.2 .
 docker push registry.gitlab.com/partavate/nft-dice-roller/client:0.2
@@ -58,7 +57,7 @@ export KUBECONFIG=$HOME/.kube/linode
 
 1. Update the image tag in `deployment/polydice-deployment.yaml`
 2. Publish the updated deployment:
- 
+
 ```
 kubectl apply -f deployment/polydice-deployment.yaml
 ```
@@ -88,6 +87,6 @@ kubectl apply -f deployment/polydice-deployment.yaml
 kubectl apply -f deployment/polydice-ingressroute.yaml
 ```
 
-Traefik should configure a new router to [https://dice.partavate.com](https://dice.partavate.com).
+Traefik should configure a new router to [https://polydice.app](https://polydice.app).
 
 Verify by checking [https://traefik.partavate.com/dashboard/#/http/routers](https://traefik.partavate.com/dashboard/#/http/routers)
