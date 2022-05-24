@@ -135,6 +135,17 @@ export default {
             <d6-rare-numbers :font-color="fontColor" :value="displayValue()" />
           </g>
         </g>
+
+        <g v-if="sides == 4" transform="rotate(180) translate(0 0)">
+          <d6-generic-background :background-color="backgroundColor" />
+          <g v-if="fontType == 0">
+            <d6-generic-numbers :font-color="fontColor" :value="displayValue()" />
+          </g>
+          <g v-if="fontType == 1">
+            <d6-rare-numbers :font-color="fontColor" :value="displayValue()" />
+          </g>
+        </g>
+
       </g>
     </g>
   </g>

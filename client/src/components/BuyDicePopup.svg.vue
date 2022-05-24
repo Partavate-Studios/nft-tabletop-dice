@@ -18,7 +18,7 @@ export default {
     return {
       store,
       qty: 1,
-      maxBuy: 5
+      maxBuy: 7
     }
   },
   methods: {
