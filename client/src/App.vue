@@ -112,7 +112,7 @@ export default {
 
         <g v-else-if="!store.web3.isConnected">
           <g transform="translate(0 70)" fill="#aaccff">
-            <square-button label="Connect It!" @click="connect()" />
+            <square-button label="Connect Wallet" @click="connect()" />
           </g>
         </g>
 

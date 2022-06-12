@@ -13,6 +13,7 @@ import("./tasks/mint");
 import("./tasks/roll");
 import("./tasks/verify");
 import("./tasks/setAccountsRecievable");
+import("./tasks/addsides");
 
 import { HardhatUserConfig } from "hardhat/config";
 

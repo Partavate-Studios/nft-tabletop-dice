@@ -248,6 +248,7 @@ export const web3dice = {
         return
       }
     }, this)
+    console.log('all dice', JSON.stringify(store.ownedDice))
     console.log('Dice loaded, lets play!', typeof store.ownedDice)
   },
 

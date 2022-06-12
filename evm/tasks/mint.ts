@@ -31,7 +31,6 @@ task("mint-die", "Mint Dice NFT")
   });
 
 
-
   task("mint-batch", "Mint Dice Batch")
   .addParam("owner", "Who will own the NFT", env("ETH_PUBLIC_KEY"), types.string)
   .addParam("count", "The number of Dice", 5, types.int)

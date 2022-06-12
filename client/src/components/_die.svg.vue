@@ -2,9 +2,14 @@
 import D20GenericBackground from './_dice-parts/d20/background/generic-background.svg.vue'
 import D20GenericNumbers from './_dice-parts/d20/generic-numbers.svg.vue'
 import D20RareNumbers from './_dice-parts/d20/rare-numbers.svg.vue'
+
 import D6GenericBackground from './_dice-parts/d6/background/generic-background.svg.vue'
 import D6GenericNumbers from './_dice-parts/d6/generic-numbers.svg.vue'
 import D6RareNumbers from './_dice-parts/d6/rare-numbers.svg.vue'
+
+import D4GenericBackground from './_dice-parts/d4/background/generic-background.svg.vue'
+import D4GenericNumbers from './_dice-parts/d4/generic-numbers.svg.vue'
+import D4RareNumbers from './_dice-parts/d4/rare-numbers.svg.vue'
 </script>
 
 <script>
@@ -135,6 +140,17 @@ export default {
             <d6-rare-numbers :font-color="fontColor" :value="displayValue()" />
           </g>
         </g>
+
+        <g v-if="sides == 4">
+          <d4-generic-background :background-color="backgroundColor" />
+          <g v-if="fontType == 0">
+            <d4-generic-numbers :font-color="fontColor" :value="displayValue()" />
+          </g>
+          <g v-if="fontType == 1">
+            <d4-rare-numbers :font-color="fontColor" :value="displayValue()" />
+          </g>
+        </g>
+
       </g>
     </g>
   </g>
