@@ -1,4 +1,4 @@
-<?php 
+<?php
 // Expected URL Schema:
 // /metadata/die.{size}.{foreground}.{background}.{font}.svg
 //
@@ -31,6 +31,9 @@ echo $version;
 
 // Print the appropriate Die, as SVG
 switch ($sides) {
+  case '4':
+    include "dynamic-svg/d4.svg.php";
+    break;
   case '6':
     include "dynamic-svg/d6.svg.php";
     break;

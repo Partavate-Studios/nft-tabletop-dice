@@ -47,7 +47,8 @@
         </g>
       </g>
       <g>
-        <g>
+        <g fill="#<?php echo $foregroundColor ?>" stroke="#<?php echo $foregroundColor ?>" stroke-opacity="0.25">
+        <?php if ($font == 0) : ?>
           <defs>
             <radialGradient id="dotshade" cx="50%" cy="50%" r="50%" fx="45%" fy="60%">
               <stop stop-color="#000000" stop-opacity="0" offset="0%"></stop>
@@ -55,7 +56,7 @@
               <stop stop-color="#000000" stop-opacity="0.5" offset="110%"></stop>
             </radialGradient>
           </defs>
-          <g name="dots_fill" fill="#<?php echo $foregroundColor ?>" stroke="#<?php echo $foregroundColor ?>" stroke-opacity="0.25">
+          <g name="dots_fill">
             <g transform="translate(256 256) scale(2)">
               <g>
                 <ellipse cx="-12" cy="-31.5" rx="10" ry="0.5"></ellipse>
@@ -83,6 +84,22 @@
               </g>
             </g>
           </g>
+        <?php endif; ?>
+        <?php if ($font == 1) : ?>
+          <g transform="translate(258 274) scale(2.5)">
+            <rect x="-8" y="-35" width="16" height="1" />
+            <rect x="-11" y="-32.5" width="10" height="1" />
+            <rect x="1" y="-32.5" width="10" height="1" />
+            <g transform="scale(2)">
+            <g
+              transform="matrix(0.9742179,-0.22560913,-0.22560913,-0.9742179,-553.55793,-163.54197)">
+              <path
+                id="path693"
+                d="m 506.23827,-291.57337 -11.03956,2.55654 0.5113,2.20791 -2.20791,0.51131 1.53392,6.62373 2.20792,-0.5113 0.51131,2.20791 11.03956,-2.55654 -0.51131,-2.20791 -6.62374,1.53392 -0.5113,-2.20791 6.62373,-1.53392 -0.5113,-2.20792 2.2079,-0.51131 -0.5113,-2.20791 -2.20791,0.51131 z m -3.90452,3.23053 0.51131,2.2079 -2.20791,0.51131 -0.51131,-2.20791 z" />
+            </g>
+            </g>
+          </g>
+        <?php endif; ?>
         </g>
       </g>
       <g name="diceshadow" transform="translate(256 260) scale(2)">
