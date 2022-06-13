@@ -4,41 +4,64 @@ import { env } from "../lib/env";
 import { getContract } from "../lib/contract";
 import { tsvToJson, jsonToTsv } from "../lib/tsvJson"
 import * as fs from "fs"
-import { any } from "hardhat/internal/core/params/argumentTypes";
+import { chainConfig } from '@nomiclabs/hardhat-etherscan/dist/src/ChainConfig';
 
 // Minting Process for Batch Issues:
 // Export a spreadsheet to a TSV with `email<tab>address` (No Header row) to ../addresses/
 // const addressesTSV = "addresses/mint-recipients-dygycon.tsv"
 const addressesTSV = "addresses/mumbai-test.tsv"
-const countPerRecipient = 1;
+type MintResult = {
+  email: string;
+  wallet: string;
+  explorerUrl?: string;
+  error?: string;
+};
+
 
 task("mint-event-batch", "Batch Recipients for NFT Mint")
+  .addParam("count", "The number of Dice to issue", 1, types.int)
   .setAction(async (taskArgs, hre) => {
+
     const tsv = fs.readFileSync(addressesTSV, {encoding:'utf8', flag:'r'});
     var recipientList: Array<Array<string>> = tsvToJson(tsv);
+    var mintResults: Array<MintResult> = [];
     
-    await Promise.all(recipientList.map(async (entry: Array<string>, index: number) => {
+    await getContract("TabletopDiceNFT", hre)
+    .then(async (contract: Contract) => {
+      for (const recipient of recipientList) {
+        let mintRes: MintResult = {
+          email: recipient[0],
+          wallet: recipient[1]
+        }
+        mintResults.push(await mintToRecipient(contract, mintRes, taskArgs.count));
+      }
+      return mintResults;
+    })
+    .then((mintResults: Array<MintResult>) => {
+      console.log("Minting Results:");
+      console.log(jsonToTsv(mintResults));
+    })
+    .catch(e => console.log("Error Invoking Contract: ", e.message));
 
-      recipientList[index][2] = await getContract("TabletopDiceNFT", hre)
-        .then(async (contract: Contract) => {
-          let email = entry[0];
-          let addr = entry[1];
-          const transaction = await contract.mintRandomDice(
-            countPerRecipient,
-            addr,
-            { gasLimit: 700000 * countPerRecipient }
-          );
-          return transaction.wait();
-        })
-        .then((receipt: any) => {
-          return `https://polygonscan.com/tx/${receipt.transactionHash}`;
-        })
-        .catch(e => "ERROR:" + e.message);
+    // This has to happen sequentially due to EVM API, so don't use in Promise.all(Array.map())
+    async function mintToRecipient(contract: Contract, mintRes: MintResult, count: number) {
+      try {
+        console.log(`Minting to ${mintRes['wallet']}...`)
+        const transaction = await contract.mintRandomDice(
+          count,
+          mintRes['wallet'],
+          { gasLimit: 700000 * count }
+        );
+        const tx = await transaction.wait();
+        // TODO: Use hardhat-etherscan to get correct network URL. I spent 2 hours trying :(
+        mintRes['explorerUrl'] = `https://polygonscan.com/tx/${tx.transactionHash}`;
+      } catch (e) {
+        console.log(`ERROR MINTING: ${e}`)
+        mintRes['error'] = (e as Error).message;
+      } finally {
+        return mintRes;
+      }
+    }
 
-    }));
-
-    // Prints a TSV of `email<tab>address<tab>polygonscan-tx-url|error`
-    // Paste this into Thunderbird MailMerge-P
-    console.log(jsonToTsv(recipientList))
      
   });

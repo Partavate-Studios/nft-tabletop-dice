@@ -7,8 +7,13 @@ export function tsvToJson(tsv: string) {
   });
 }
 
-export function jsonToTsv(jsonarray: Array<Array<string>>) {
-  return jsonarray.map(entry => { 
-    return Object.values(entry).join("\t");
-  }).join("\n");
+// Includes headers
+export function jsonToTsv(objArray: Array<Object>) {
+  const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+  let str = `${Object.keys(array[0]).map(value => `${value}`).join("\t")}` + '\r\n';
+
+  return array.reduce((str: string, next: number) => {
+      str += `${Object.values(next).map(value => `${value}`).join("\t")}` + '\r\n';
+      return str;
+     }, str);
 }
