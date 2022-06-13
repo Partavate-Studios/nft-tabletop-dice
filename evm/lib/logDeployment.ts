@@ -1,17 +1,24 @@
 import * as fs from "fs"
 
+// Local addresses change every time test are ran, so store in a .gitignored file
+// And keep public addresses in a VCS tracked file. 
+const GANACHE_CHAINID = 1337;
 const HARDHAT_TEST_CHAINID = 31337;
+
+function getAddressesFile(chainId: number) {
+  switch(chainId) {
+    case GANACHE_CHAINID:
+    case HARDHAT_TEST_CHAINID:
+      return 'local-addresses.json';
+    default:
+      return 'published-addresses.json';
+  }
+}
 
 // Save the deployment to a local JSON file. The client uses this information.
 export function logDeployment(chainId: number, address: string) {
-  const addressDirectory = 'addresses'
-  const addressFile = 'published-addresses.json'
-  let filePath = addressDirectory + '/' + addressFile
-
-  // Don't modify when Hardhat tests are ran
-  if (chainId == HARDHAT_TEST_CHAINID) {
-    return;
-  }
+  const addressDirectory = 'addresses';
+  let filePath = addressDirectory + '/' + getAddressesFile(chainId);
 
   //ensure the directory exists
   if (!fs.existsSync(addressDirectory)){
@@ -33,12 +40,15 @@ export function logDeployment(chainId: number, address: string) {
 }
 
 // Return the saved address for a given chain
-export function getDeployment(chainId: number): string {
-  const addressDirectory = 'addresses'
-  const addressFile = 'published-addresses.json'
-  let filePath = addressDirectory + '/' + addressFile
+export function getDeployment(chainId?: number): string {
+  if (chainId === undefined) {
+    throw("Error: ChainId is not set for the selected network.");
+  }
+  
+  const addressDirectory = 'addresses';
+  let filePath = addressDirectory + '/' + getAddressesFile(chainId);
 
-  let chainIdKey = chainId.toString()
+  let chainIdKey = chainId.toString();
 
   //ensure the directory exists
   if (!fs.existsSync(addressDirectory)){
@@ -49,11 +59,11 @@ export function getDeployment(chainId: number): string {
   let addressData: {[key: string]: string} = {}
   if (fs.existsSync(filePath)){
     let data = fs.readFileSync(filePath, {encoding:'utf8', flag:'r'});
-    addressData = JSON.parse(data)
+    addressData = JSON.parse(data);
   }
 
   if (chainIdKey in addressData) {
-    return addressData[chainIdKey]
+    return addressData[chainIdKey];
   } else {
     return "No published deployment";
   }

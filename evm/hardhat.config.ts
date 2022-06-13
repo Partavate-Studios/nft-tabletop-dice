@@ -30,6 +30,7 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
+      chainId: 31337
     },
     localhost: {
       chainId: 1337

@@ -8,6 +8,7 @@ typechain
 cache
 artifacts/*
 artifacts/contracts/**/*.dbg.json
+addresses/local-addresses.json
 
 # Include ABIs
 !artifacts/contracts/
