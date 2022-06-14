@@ -10,10 +10,14 @@ export function tsvToJson(tsv: string) {
 // Includes headers
 export function jsonToTsv(objArray: Array<Object>) {
   const array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
-  let str = `${Object.keys(array[0]).map(value => `${value}`).join("\t")}` + '\r\n';
+  let str = jsonToTsvLine(array[0]);
 
-  return array.reduce((str: string, next: number) => {
-      str += `${Object.values(next).map(value => `${value}`).join("\t")}` + '\r\n';
-      return str;
-     }, str);
+  return array.reduce((str: string, next: string) => {
+      return str += jsonToTsvLine(next);
+    }, 
+    str);
+}
+
+export function jsonToTsvLine(object: Object) {
+  return `${Object.values(object).map(value => `${value}`).join("\t")}` + '\r\n';
 }

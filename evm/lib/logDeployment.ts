@@ -1,17 +1,17 @@
 import * as fs from "fs"
 
 // Local addresses change every time test are ran, so store in a .gitignored file
-// And keep public addresses in a VCS tracked file. 
-const GANACHE_CHAINID = 1337;
-const HARDHAT_TEST_CHAINID = 31337;
+// And keep public addresses in a VCS tracked file.
+const LOCAL_CHAINS = {
+  ganache: 1337,
+  hardhat: 31337,
+}
 
-function getAddressesFile(chainId: number) {
-  switch(chainId) {
-    case GANACHE_CHAINID:
-    case HARDHAT_TEST_CHAINID:
-      return 'local-addresses.json';
-    default:
-      return 'published-addresses.json';
+function getAddressesFile(chainId: string|number) {
+  if (Object.values(LOCAL_CHAINS).includes(Number(chainId))) {
+    return 'local-addresses.json';
+  } else {
+    return 'published-addresses.json';
   }
 }
 

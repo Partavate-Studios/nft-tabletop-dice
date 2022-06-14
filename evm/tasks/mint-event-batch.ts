@@ -2,9 +2,8 @@ import { task, types } from "hardhat/config";
 import { Contract } from "ethers";
 import { env } from "../lib/env";
 import { getContract } from "../lib/contract";
-import { tsvToJson, jsonToTsv } from "../lib/tsvJson"
+import { tsvToJson, jsonToTsv, jsonToTsvLine } from "../lib/tsvJson"
 import * as fs from "fs"
-import { chainConfig } from '@nomiclabs/hardhat-etherscan/dist/src/ChainConfig';
 
 // Minting Process for Batch Issues:
 // Export a spreadsheet to a TSV with `email<tab>address` (No Header row) to ../addresses/
@@ -17,12 +16,13 @@ type MintResult = {
   error?: string;
 };
 
-
 task("mint-event-batch", "Batch Recipients for NFT Mint")
   .addParam("count", "The number of Dice to issue", 1, types.int)
+  .addParam('addressFile', 'TSV file with "email<tab>walletAddress" on each row. No headers.')
+  .addParam('outputFile', "Path to save resulting transactions to (as TSV)")
   .setAction(async (taskArgs, hre) => {
 
-    const tsv = fs.readFileSync(addressesTSV, {encoding:'utf8', flag:'r'});
+    const tsv = fs.readFileSync(taskArgs.addressFile, {encoding:'utf8', flag:'r'});
     var recipientList: Array<Array<string>> = tsvToJson(tsv);
     var mintResults: Array<MintResult> = [];
     
@@ -31,7 +31,9 @@ task("mint-event-batch", "Batch Recipients for NFT Mint")
       for (const recipient of recipientList) {
         let mintRes: MintResult = {
           email: recipient[0],
-          wallet: recipient[1]
+          wallet: recipient[1],
+          explorerUrl: '', // Needed for TSV positioning
+          error: ''
         }
         mintResults.push(await mintToRecipient(contract, mintRes, taskArgs.count));
       }
@@ -59,6 +61,8 @@ task("mint-event-batch", "Batch Recipients for NFT Mint")
         console.log(`ERROR MINTING: ${e}`)
         mintRes['error'] = (e as Error).message;
       } finally {
+        // Print TSV row of this result
+        fs.appendFileSync(taskArgs.outputFile, jsonToTsvLine(mintRes))
         return mintRes;
       }
     }
