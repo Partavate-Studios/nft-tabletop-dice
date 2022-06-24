@@ -20,7 +20,7 @@ spec:
         - name: partavate-gitlab-registry
       containers:
         - name: polydice-client
-          image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2
+          image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2.nginxfix
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
