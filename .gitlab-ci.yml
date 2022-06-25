@@ -21,8 +21,12 @@ docker-build:
         tag="$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/client:${tag}" .
-    - docker push "$CI_REGISTRY_IMAGE/client:${tag}"
+    - docker build --pull -t "${CI_REGISTRY_IMAGE}/client:${tag}" .
+    - docker push "${CI_REGISTRY_IMAGE}/client:${tag}"
+    - echo TAGGED_IMAGE="${CI_REGISTRY_IMAGE}/client:${tag}" >> image.env
+  artifacts:
+    reports:
+      dotenv: image.env # Save generated image name/tag for later stages
   # Run this job in a branch where a Dockerfile exists
   rules:
     - if: $CI_COMMIT_BRANCH
@@ -35,10 +39,11 @@ deploy-staging:
     entrypoint: ['']
   stage: deploy-staging
   needs:
-    - docker-build
+    - job: docker-build
+      artifacts: true
   when: manual
   script:
     - kubectl config get-contexts
     - kubectl config use-context partavate/infrastructure:partavate-production-k8s
-    - kubectl set image --namespace websites deployment/polydice-client-staging polydice-client=$REPO_REGISTRY_URL:$TAG
+    - kubectl set image --namespace websites deployment/polydice-client-staging polydice-client=${TAGGED_IMAGE}
 
