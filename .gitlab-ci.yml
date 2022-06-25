@@ -1,8 +1,8 @@
 stages:
   - build
-  - deploy_client_staging
+  - deploy-staging
 
-docker_build:
+docker-build:
   # Use the official docker image.
   image: docker:latest
   stage: build
@@ -29,9 +29,13 @@ docker_build:
       exists:
         - Dockerfile
 
-deploy_client_staging:
-  image: bitnami/kubectl:latest
-  stage: deploy_client_staging
+deploy-staging:
+  image: 
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  stage: deploy-staging
+  needs:
+    - docker-build
   when: manual
   script:
     - kubectl config get-contexts
