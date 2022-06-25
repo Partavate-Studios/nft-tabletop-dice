@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: polydice-client-staging
+  namespace: websites
+  labels:
+    app: polydice-client-staging
+spec:
+  type: ClusterIP
+  selector:
+    app: polydice-client-staging
+  ports:
+    - port: 80
