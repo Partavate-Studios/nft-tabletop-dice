@@ -1,4 +1,4 @@
-test-kubecontrol:
+test_kubecontrol:
   image:
     name: bitnami/kubectl:latest
     entrypoint: ['']
@@ -10,16 +10,17 @@ test-kubecontrol:
 stages:
   - test
   - build
-  - deploy_staging
+  - deploy_client_staging
 
-test:
+test_client:
   stage: test
   image: node:lts-alpine
   script:
+    - cd client/
     - npm install
     - npm run test
 
-docker-build:
+docker_build:
   # Use the official docker image.
   image: docker:latest
   stage: build
@@ -30,6 +31,7 @@ docker-build:
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
+    - cd client/
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
         tag=""
@@ -46,8 +48,8 @@ docker-build:
       exists:
         - Dockerfile
 
-deploy:
-  stage: deploy_staging
+deploy_client_staging:
+  stage: deploy_client_staging
   when: manual
   script:
     - kubectl config get-contexts
