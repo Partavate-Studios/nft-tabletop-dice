@@ -30,6 +30,7 @@ docker_build:
         - Dockerfile
 
 deploy_client_staging:
+  image: bitnami/kubectl:latest
   stage: deploy_client_staging
   when: manual
   script:
