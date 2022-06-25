@@ -1,12 +1,3 @@
-test_kubecontrol:
-  image:
-    name: bitnami/kubectl:latest
-    entrypoint: ['']
-  script:
-    - kubectl config get-contexts
-    - kubectl config use-context partavate/infrastructure:partavate-production-k8s 
-    - kubectl get pods
-
 stages:
   - build
   - deploy_client_staging
