@@ -8,17 +8,8 @@ test_kubecontrol:
     - kubectl get pods
 
 stages:
-  - test
   - build
   - deploy_client_staging
-
-test_client:
-  stage: test
-  image: node:lts-alpine
-  script:
-    - cd client/
-    - npm install
-    - npm run test
 
 docker_build:
   # Use the official docker image.
