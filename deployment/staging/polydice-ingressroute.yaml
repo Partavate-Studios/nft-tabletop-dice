@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: poldice-ingress-staging
+  namespace: websites
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    # Partavate.com
+    - match: Host(`staging.polydice.app`) || Host(`dice-stg.partavate.com`)
+      kind: Rule
+      services:
+        - name: polydice-client-staging
+          port: 80
+  tls:
+    certResolver: letsencrypt
