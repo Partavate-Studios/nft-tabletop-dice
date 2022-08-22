@@ -16,14 +16,14 @@ docker-build:
     - |
       if [[ "$CI_COMMIT_BRANCH" == "$CI_DEFAULT_BRANCH" ]]; then
         tag=""
-        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = 'latest'"
+        echo "Running on default branch '$CI_DEFAULT_BRANCH': tag = ':latest'"
       else
-        tag="$CI_COMMIT_REF_SLUG"
+        tag=":$CI_COMMIT_REF_SLUG"
         echo "Running on branch '$CI_COMMIT_BRANCH': tag = $tag"
       fi
-    - docker build --pull -t "${CI_REGISTRY_IMAGE}/client:${tag}" .
-    - docker push "${CI_REGISTRY_IMAGE}/client:${tag}"
-    - echo TAGGED_IMAGE="${CI_REGISTRY_IMAGE}/client:${tag}" >> image.env
+    - docker build --pull -t "${CI_REGISTRY_IMAGE}/client${tag}" .
+    - docker push "${CI_REGISTRY_IMAGE}/client${tag}"
+    - echo TAGGED_IMAGE="${CI_REGISTRY_IMAGE}/client${tag}" >> image.env
   artifacts:
     reports:
       dotenv: image.env # Save generated image name/tag for later stages
