@@ -2,8 +2,8 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: poldice-ingress
-  namespace: partavate-websites
+  name: polydice-ingress
+  namespace: websites
 spec:
   entryPoints:
     - web
