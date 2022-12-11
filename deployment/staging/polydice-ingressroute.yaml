@@ -2,7 +2,7 @@
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: poldice-ingress-staging
+  name: polydice-ingress-staging
   namespace: websites
 spec:
   entryPoints:
