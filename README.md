@@ -35,41 +35,61 @@ hh verify-published --network mumbai
 
 This will update `evm/addresses/published-addresses.json`, allowing client builds (`docker build`) to reference the correct contract version.
 
+## Web Client Build & Deploy
+
+Deployments have three "stages", and all three can happen automatically on GitLab's CI, or manually via the CLI.
+See `.gitlab-ci.yml` for the GitLab CI configuration.
+
+This deploys changes to the **client only**. Contract changes must be deployed to their chains using Hardhat (See the above README section).
+
+### Build
+
+The PolyDice.app website (client) runs fully containerized, and is build from source using the `Dockerfile`.
+
+This image is stored in our GitLab Docker registry, and loaded into the Kubernetes cluster.
+
+The image build happens automatically in GitLab when triggered by a new or updated Merge Request, or a commit/merge to the default branch (`development`).
+
+To manually build and upload to the registry:
+
+```
+# {some-tag} is usually a version number. `latest` should only be used for production releases.
+docker login registry.gitlab.com
+docker build -t registry.gitlab.com/partavate/nft-dice-roller/client:some-tag .
+docker push registry.gitlab.com/partavate/nft-dice-roller/client:some-tag
+```
+
+## Staging Deployment
+
+### Automated CI (One-Click)
+GitLab will provide the ability to one-click trigger a staging deployment at https://gitlab.com/partavate/nft-dice-roller/-/pipelines, 
+once as image has been successfully built due to a merge request action.
+
+### Manually deployment
+This updates the production Kubernetes service, and starts it up. Set the image tag to match the above:
+
+```
+TAGGED_IMAGE=registry.gitlab.com/partavate/nft-dice-roller/client:some-tag
+kubectl set image --namespace websites deployment/polydice-client-staging polydice-client=${TAGGED_IMAGE}
+kubectl rollout restart  deployment/polydice-client-staging -n websites
+```
+
 ## Production Deployment
 
-This deploys changes to the **client only**. Contract changes must be deployed to their chains using Hardhat.
+### Automated CI (One-Click)
+GitLab will provide the ability to one-click trigger a production deployment at https://gitlab.com/partavate/nft-dice-roller/-/pipelines, 
+once as image has been successfully built after commit or merge to the default branch (`development`).
 
-Build the Docker image, from inside `./`
-
-```
-docker login registry.gitlab.com
-docker build -t registry.gitlab.com/partavate/nft-dice-roller/client:0.2 .
-docker push registry.gitlab.com/partavate/nft-dice-roller/client:0.2
-```
-
-### Update the Kubernetes Deployment
-
-Load the KUBECONFIG env, pointing the LKE cluster.
+### Manually deployment
+This updates the production Kubernetes service, and starts it up. Set the image tag to match the above:
 
 ```
-export KUBECONFIG=$HOME/.kube/linode
+TAGGED_IMAGE=registry.gitlab.com/partavate/nft-dice-roller/client:some-tag
+kubectl set image --namespace websites deployment/polydice-client polydice-client=${TAGGED_IMAGE}
+kubectl rollout restart  deployment/polydice-client -n websites
 ```
 
-1. Update the image tag in `deployment/polydice-deployment.yaml`
-2. Publish the updated deployment:
-
-```
-kubectl apply -f deployment/polydice-deployment.yaml
-```
-
-If the value of `image:` did not change in `/polydice-deployment.yaml`, you'll need to redeploy simply by restarting the container:
-
-```
-kubectl rollout restart  deployment/polydice-client -n partavate-websites
-```
-
-
-## Initial Kubernetes Setup:
+## Initial Kubernetes Setup
 
 Assumes the Linode LKE Cluster defined in the `Infrastructure` repo is up.
 
@@ -79,14 +99,16 @@ Load the KUBECONFIG env, pointing the LKE cluster.
 export KUBECONFIG=$HOME/.kube/linode
 ```
 
-Deploy all the things!
+Deploy all the things! (Staging, then production)
 
 ```
-kubectl apply -f deployment/polydice-service.yaml
-kubectl apply -f deployment/polydice-deployment.yaml
-kubectl apply -f deployment/polydice-ingressroute.yaml
+# Replace staging with production for prod deploy
+
+kubectl apply -f deployment/staging/polydice-service.yaml
+kubectl apply -f deployment/staging/polydice-deployment.yaml
+kubectl apply -f deployment/staging/polydice-ingressroute.yaml
 ```
 
-Traefik should configure a new router to [https://polydice.app](https://polydice.app).
+Traefik should configure a new router to [https://staging.polydice.app](https://staging.polydice.app) or [https://polydice.app](https://polydice.app).
 
 Verify by checking [https://traefik.partavate.com/dashboard/#/http/routers](https://traefik.partavate.com/dashboard/#/http/routers)

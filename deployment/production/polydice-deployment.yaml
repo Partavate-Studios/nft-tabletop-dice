@@ -20,7 +20,8 @@ spec:
         - name: partavate-gitlab-registry
       containers:
         - name: polydice-client
-          image: registry.gitlab.com/partavate/nft-dice-roller/client:0.2.nginxfix
+          # Gitlab CI will override this on deployments
+          image: registry.gitlab.com/partavate/nft-dice-roller/client:latest
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -32,9 +33,12 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 3
           resources:
-           limits:
-              memory: '64Mi'
+            limits:
+              memory: '80Mi'
               cpu: '100m'
+            requests:
+              memory: '20Mi'
+              cpu: '25m'
           ports:
             - containerPort: 80
           # Environmental variables, overrides .env
