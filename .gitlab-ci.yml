@@ -1,6 +1,15 @@
+# PolyDice Build and Deploy Pipeline
+# Build (new Docker image) on any of:
+#  - Merge Request Opened/Updated/Merged
+#  - Merge or push on the default branch
+# Deployment (Available after build):
+#  - Staging (Using the commit-hash tagged image) (manually triggerable)
+#  - Production (Using the newly created :latest tag)
+
 stages:
   - build
   - deploy-staging
+  - deploy-production
 
 docker-build:
   # Use the official docker image.
@@ -29,7 +38,10 @@ docker-build:
       dotenv: image.env # Save generated image name/tag for later stages
   # Run this job in a branch where a Dockerfile exists
   rules:
-    - if: $CI_COMMIT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      exists:
+        - Dockerfile
+    - if: $CI_COMMIT_BRANCH == "$CI_DEFAULT_BRANCH"
       exists:
         - Dockerfile
 
@@ -46,4 +58,21 @@ deploy-staging:
     - kubectl config get-contexts
     - kubectl config use-context partavate/infrastructure:partavate-production-k8s
     - kubectl set image --namespace websites deployment/polydice-client-staging polydice-client=${TAGGED_IMAGE}
+    - kubectl patch deployment polydice-client-staging --namespace websites -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$CI_COMMIT_SHORT_SHA\"}}}}}}"
+
+deploy-production:
+  image: 
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  stage: deploy-production
+  needs:
+    - job: docker-build
+      artifacts: true
+  when: manual
+  script:
+    - kubectl config get-contexts
+    - kubectl config use-context partavate/infrastructure:partavate-production-k8s
+    - kubectl set image --namespace websites deployment/polydice-client polydice-client=${TAGGED_IMAGE}
+    - kubectl patch deployment polydice-client --namespace websites -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$CI_COMMIT_SHORT_SHA\"}}}}}}"
+
 
