@@ -7,14 +7,14 @@
 #  - Production (Using the newly created :latest tag)
 
 stages:
-  - build
+  - docker-build
   - deploy-staging
   - deploy-production
 
 docker-build:
   # Use the official docker image.
   image: docker:latest
-  stage: build
+  stage: docker-build
   services:
     - docker:dind # Docker-in-docker, runs on Gitlab infra
   before_script:
