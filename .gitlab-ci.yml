@@ -58,6 +58,10 @@ deploy-staging:
     - kubectl config use-context partavate/infrastructure:partavate-production-k8s
     - kubectl set image --namespace websites deployment/polydice-client-staging polydice-client=${TAGGED_IMAGE}
     - kubectl patch deployment polydice-client-staging --namespace websites -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$CI_COMMIT_SHORT_SHA\"}}}}}}"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      exists:
+        - Dockerfile
 
 deploy-production:
   image: 
@@ -73,3 +77,7 @@ deploy-production:
     - kubectl config use-context partavate/infrastructure:partavate-production-k8s
     - kubectl set image --namespace websites deployment/polydice-client polydice-client=${TAGGED_IMAGE}
     - kubectl patch deployment polydice-client --namespace websites -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$CI_COMMIT_SHORT_SHA\"}}}}}}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "$CI_DEFAULT_BRANCH"
+      exists:
+        - Dockerfile
