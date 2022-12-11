@@ -7,14 +7,13 @@
 #  - Production (Using the newly created :latest tag)
 
 stages:
-  - docker-build
-  - deploy-staging
-  - deploy-production
+  - build
+  - deploy
 
 docker-build:
   # Use the official docker image.
   image: docker:latest
-  stage: docker-build
+  stage: build
   services:
     - docker:dind # Docker-in-docker, runs on Gitlab infra
   before_script:
@@ -49,7 +48,7 @@ deploy-staging:
   image: 
     name: bitnami/kubectl:latest
     entrypoint: ['']
-  stage: deploy-staging
+  stage: deploy
   needs:
     - job: docker-build
       artifacts: true
@@ -64,7 +63,7 @@ deploy-production:
   image: 
     name: bitnami/kubectl:latest
     entrypoint: ['']
-  stage: deploy-production
+  stage: deploy
   needs:
     - job: docker-build
       artifacts: true
@@ -74,5 +73,3 @@ deploy-production:
     - kubectl config use-context partavate/infrastructure:partavate-production-k8s
     - kubectl set image --namespace websites deployment/polydice-client polydice-client=${TAGGED_IMAGE}
     - kubectl patch deployment polydice-client --namespace websites -p "{\"spec\":{\"template\":{\"metadata\":{\"labels\":{\"build\":\"$CI_COMMIT_SHORT_SHA\"}}}}}}"
-
-
