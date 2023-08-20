@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: polydice-ingress
+  namespace: websites
+spec:
+  entryPoints:
+    - web
+    - websecure
+  routes:
+    # Partavate.com
+    - match: Host(`polydice.app`) || Host(`dice.partavate.com`)
+      kind: Rule
+      services:
+        - name: polydice-client
+          port: 80
+  tls:
+    certResolver: letsencrypt
