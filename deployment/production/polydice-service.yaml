@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: polydice-client
+  namespace: websites
+  labels:
+    app: polydice-client
+spec:
+  type: ClusterIP
+  selector:
+    app: polydice-client
+  ports:
+    - port: 80

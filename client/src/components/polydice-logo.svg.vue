@@ -9,7 +9,7 @@ export default {
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-19.24433,-55.306355)">
+     transform="translate(-95,-95)">
     <g
        aria-label="DICE"
        id="text65001"

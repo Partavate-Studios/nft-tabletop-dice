@@ -1,31 +1,41 @@
 <script setup>
 import SvgContainer from './components/layouts/SvgContainer.vue'
 import MenuIcon from './components/_menu-icon.svg.vue'
-import PolydiceLogo from './components/polydice-logo.svg.vue'
+import AboutScreen from './components/AboutScreen.svg.vue'
+import PolydiceLogoButton from './components/polydice-logo-button.svg.vue'
 import PolydiceIcon from './components/polydice-icon.svg.vue'
 import PolygonLogo from './components/_polygon-logo.svg.vue'
-import Die from './components/_die.svg.vue'
 import DiceMenu from './components/DiceMenu.svg.vue'
+import BuyDice from './components/BuyDicePopup.svg.vue'
+import DiceRoller from './components/DiceRoller.svg.vue'
+import SquareButton from './components/SquareButton.svg.vue'
+import Notice from './components/Notice.svg.vue'
 import { web3dice } from './web3dice.js'
-
+import { store } from './store.js'
 </script>
 
 <script>
-import { store } from './store.js'
-
 export default {
   data() {
     return {
       store,
-      menu: false
+      menu: false,
+      buyDice: false,
+      about: false
     }
   },
   computed: {
     chainName() {
       if ( store.web3.chain != null) {
         return store.web3.chain.name
-      }      
+      }
       return 'no chain found'
+    },
+    chainFound() {
+      if ( store.web3.chain != null) {
+        return true
+      }
+      return false
     },
     diceSelected() {
       if(store.selectedDice[0] != null) {
@@ -38,6 +48,12 @@ export default {
         return true
       }
       return false
+    },
+    menuIsOpen() {
+      if (this.menu || this.buyDice || this.about) {
+        return true
+      }
+      return false
     }
   },
   methods: {
@@ -45,27 +61,23 @@ export default {
       web3dice.connect()
     },
     openMenu() {
+      this.closeAll()
+      web3dice.getOwnedDice()
       this.menu = true
     },
-    closeMenu() {
+    openBuyDice() {
+      this.closeAll()
       this.menu = false
+      this.buyDice = true
     },
-    async roll() {
-      if (!this.diceSelected) {
-        this.menu = true
-      } else {
-        //let traits = await web3dice.getTraits(diceId)
-        //console.log('traits: ', traits)
-        if (store.selectedDice[0] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[0])
-        }
-        if (store.selectedDice[1] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[1])
-        }
-        if (store.selectedDice[2] != null) {
-          await  web3dice.delayedRoll(store.selectedDice[2])
-        }
-      }
+    openAbout() {
+      this.closeAll()
+      this.about = true
+    },
+    closeAll () {
+      this.menu = false
+      this.buyDice = false
+      this.about = false
     },
     switchNetwork() {
       web3dice.switchNetwork()
@@ -77,69 +89,71 @@ export default {
 <template>
   <div id="svgContainer">
     <svg-container>
-      <g fill="#ffffff"  text-anchor="middle" dominant-baseline="middle" font-size="1.75em">
+      <g fill="#ffffff" text-anchor="middle" dominant-baseline="middle" font-size="1.75em">
 
-        <polydice-logo transform="scale(1.1) translate(-290 -420)" opacity="0.2" />
         <polydice-icon transform="scale(4) translate(-190 -120)" opacity="0.01" />
 
-        <g v-if="!store.web3.hasWallet">
-          <text transform="translate(0 -50)">I called out looking for your Web3 wallet provider;</text>
-          <text>but alas, I heard only silence.</text>
-          <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
+        <polydice-logo-button transform="translate(-240 -420) scale(1.1)" @click="openAbout()" />
+
+        <g v-if="!chainFound">
+          <polygon-logo transform="scale(10) translate(0 32)" opacity="0.1" />
         </g>
 
-        <g v-else-if="!store.web3.isConnected || chainName != 'maticmum'">
-          <polygon-logo transform="scale(10) translate(0 40)" opacity="0.1" />
-          <text transform="translate(0 -50)">You are on the {{ chainName }} network.</text>
-          <g v-if="chainName != 'maticmum'">
-            <text>Please switch to Polygon Mumbai</text>
-            <g transform="translate(0 70)">
-              <rect x="-120" y="-30" width="240" height="60" fill="#222222" rx="15" ry="15" />
-              <text>Switch Networks</text>
-              <rect x="-120" y="-30" width="240" height="60" fill="#000000" fill-opacity="0" @click="switchNetwork()" class="can-click" />
-            </g>
+        <g font-size="0.5em" fill="#ffffff" fill-opacity="0.25" stroke="0" transform="translate(0 500)">
+          <text>Client version: {{ store.version.client }} Contract version: {{ store.version.contract }}</text>
+        </g>
+
+        <g v-if="!store.web3.hasWallet">
+          <text fill="#aaaaaa" transform="translate(0 -50)">I called out to your Web3 wallet provider;</text>
+          <text fill="#aaaaaa" >but alas, I heard only silence...</text>
+          <text transform="translate(0 50)">Check your wallet and reload this page.</text>
+
+        </g>
+
+        <g v-else-if="!store.web3.isConnected">
+          <g transform="translate(0 70)" fill="#aaccff">
+            <square-button label="Connect Wallet" @click="connect()" />
           </g>
-          <g v-else>
-            <text>Let's connect your account!</text>
-            <g transform="translate(0 70)">
-              <rect x="-120" y="-30" width="240" height="60" fill="#222222" rx="15" ry="15" />
-              <text>Connect It</text>
-              <rect x="-120" y="-30" width="240" height="60" fill="#000000" fill-opacity="0" @click="connect()" class="can-click" />
+        </g>
+
+        <g v-else-if="!store.web3.validNetwork">
+          <g v-if="chainFound">
+            <text fill="#aaaaaa"  transform="translate(0 -50)">You are on the <tspan style="text-transform: capitalize">{{ chainName }}</tspan> network.</text>
+            <text>Please switch to the Polygon Network (aka Matic)</text>
+            <g transform="translate(0 110)" fill="#ccaaff">
+              <square-button label="Switch Network" @click="switchNetwork()" />
             </g>
           </g>
         </g>
+
 
         <g v-else>
+
           <g :transform="'translate(' + 280 + ' ' + -420 +')'" v-if="!menu">
             <menu-icon @click="openMenu()" />
           </g>
 
-
-          <dice-menu :show="menu" />    
-
-          <g transform="translate(0 150)">
-            <die 
-              v-if="store.selectedDice[0] != null"
-              transform="translate(-150 -10) scale(1.2)"
-              :diceid="store.selectedDice[0]"
-            />
-            <die 
-              v-if="store.selectedDice[1] != null"
-              transform="translate(0 10) scale(1.2)"
-              :diceid="store.selectedDice[1]"
-            />
-            <die 
-              v-if="store.selectedDice[2] != null"
-              transform="translate(150 -10) scale(1.2)"
-              :diceid="store.selectedDice[2]"
-            />
-            <rect v-if="!diceSelected" x="-200" y="-50" width="400" height="100" fill="#000000" stroke="#ffffff" stroke-opacity="0.2" fill-opacity="0.2" rx="10" ry="10" class="can-click" @click="roll()" />
-            <text v-if="!diceSelected">Select Dice</text>
-            <rect x="-300" y="-100" width="600" height="200" fill="#000000" stroke="#ffffff" stroke-opacity="0.0" fill-opacity="0.0" class="can-click" @click="roll()" />
+          <g v-if="diceSelected">
+            <dice-roller />
           </g>
-          <rect v-if="menu" x="-2000" y="-2000" width="4000" height="4000" fill="#000000" opacity="0.4" @click="closeMenu" />
-          <dice-menu :show="menu" @close="closeMenu()" />        
+          <g v-else transform="translate(0 100)">
+            <square-button
+              label="Select Dice"
+              btnstyle="clear"
+              :width="400"
+              :height="100"
+              @click="openMenu()" />
+          </g>
+
+
         </g>
+        <g v-if="menuIsOpen">
+          <rect x="-2000" y="-2000" width="4000"  height="4000" fill="#000000" opacity="0.4" @click="closeAll()" />
+        </g>
+        <dice-menu :show="menu" @close="closeAll()" @buydice="openBuyDice()" />
+        <buy-dice :show="buyDice" @close="closeAll()" />
+        <about-screen :show="about" @close="closeAll()" />
+        <notice />
       </g>
     </svg-container>
   </div>
